@@ -55,6 +55,8 @@ import Footer from '../components/Footer.astro';
     --muted: #6a4b76;
     --accent: #ef7ab8;
     --shadow: rgba(49, 37, 59, 0.12);
+    --code-bg: #f3edf8;
+    --code-border: rgba(49, 37, 59, 0.12);
   }
 
   body[data-theme='dark'] {
@@ -64,6 +66,8 @@ import Footer from '../components/Footer.astro';
     --muted: #cdb6d6;
     --accent: #ff8ad4;
     --shadow: rgba(0, 0, 0, 0.35);
+    --code-bg: #2f2437;
+    --code-border: color-mix(in srgb, var(--text) 18%, transparent);
   }
 
   html,
