@@ -21,7 +21,7 @@ const { Content, frontmatter } = post;
 <Layout>
   <article class="post">
     <a class="back" href={`${baseUrl}/#posts`}>
-      ← Posts로 돌아가기
+      Posts로 돌아가기
     </a>
     <p class="eyebrow">{new Date(frontmatter.pubDate).toLocaleDateString('ko-KR')}</p>
     <h1>{frontmatter.title}</h1>
@@ -34,7 +34,7 @@ const { Content, frontmatter } = post;
 
 <style>
   .post {
-    max-width: 720px;
+    max-width: 900px;
     margin: 0 auto;
     background: color-mix(in srgb, var(--panel) 88%, transparent);
     padding: 32px;
@@ -86,7 +86,7 @@ const { Content, frontmatter } = post;
     border: 1px solid color-mix(in srgb, var(--text) 8%, transparent);
   }
 
-  @media (max-width: 720px) {
+  @media (max-width: 900px) {
     .post {
       padding: 22px;
     }
