@@ -1,27 +1,15 @@
 ---
-const baseUrl = `github-pages`
-const posts = [
-  {
-    title: 'Post 1',
-    excerpt: '첫 번째 포스트로 작업 일지를 담았어요.',
-    link: `${baseUrl}/blog/first-post`,
-  },
-  {
-    title: 'Post 2',
-    excerpt: '디자인 참고와 리소스 모음.',
-    link: '#',
-  },
-  {
-    title: 'Post 3',
-    excerpt: '개발 팁과 오늘의 기록.',
-    link: '#',
-  },
-  {
-    title: 'Post 4',
-    excerpt: '다음 업데이트를 준비 중이에요.',
-    link: '#',
-  },
-];
+const postEntries = Object.values(import.meta.glob('../post/*.md', { eager: true }));
+const posts = postEntries
+  .map(({ frontmatter }) => ({
+    title: frontmatter.title,
+    excerpt: frontmatter.description,
+    date: new Date(frontmatter.pubDate),
+    slug: frontmatter.slug,
+  }))
+  .filter((post) => Boolean(post.slug))
+  .sort((a, b) => Number(b.date) - Number(a.date));
+const baseUrl = import.meta.env.BASE_URL?.replace(/\/$/, '') || '';
 ---
 
 <section class="hero" id="title">
@@ -72,15 +60,19 @@ const posts = [
     <p>가볍게 읽을 수 있는 최근 글 목록을 준비했어요.</p>
   </div>
   <div class="post-grid">
-    {posts.map((post) => (
-      <a class="post-card" href={post.link}>
-        <div class="post-visual"></div>
-        <div class="post-meta">
-          <p class="post-title">{post.title}</p>
-          <p class="post-excerpt">{post.excerpt}</p>
-        </div>
-      </a>
-    ))}
+    {posts.length === 0 ? (
+      <p class="empty">등록된 글이 아직 없어요.</p>
+    ) : (
+      posts.map((post) => (
+        <a class="post-card" href={`${baseUrl}/Posts/${post.slug}/`}>
+          <div class="post-visual"></div>
+          <div class="post-meta">
+            <p class="post-title">{post.title}</p>
+            <p class="post-excerpt">{post.excerpt}</p>
+          </div>
+        </a>
+      ))
+    )}
   </div>
 </section>
 
@@ -242,6 +234,12 @@ const posts = [
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     gap: 18px;
+  }
+
+  .empty {
+    grid-column: 1 / -1;
+    margin: 0;
+    color: var(--muted);
   }
 
   .post-card {

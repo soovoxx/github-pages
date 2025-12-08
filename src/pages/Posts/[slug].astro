@@ -1,0 +1,94 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+const baseUrl = import.meta.env.BASE_URL?.replace(/\/$/, '') || '';
+
+export async function getStaticPaths() {
+  const posts = Object.values(import.meta.glob('../../post/*.md', { eager: true }));
+
+  return posts
+    .filter((post) => Boolean(post.frontmatter.slug))
+    .map((post) => ({
+      params: { slug: post.frontmatter.slug },
+      props: { post },
+    }));
+}
+
+const { post } = Astro.props;
+const { Content, frontmatter } = post;
+---
+
+<Layout>
+  <article class="post">
+    <a class="back" href={`${baseUrl}/#posts`}>
+      ← Posts로 돌아가기
+    </a>
+    <p class="eyebrow">{new Date(frontmatter.pubDate).toLocaleDateString('ko-KR')}</p>
+    <h1>{frontmatter.title}</h1>
+    <p class="description">{frontmatter.description}</p>
+    <div class="content">
+      <Content />
+    </div>
+  </article>
+</Layout>
+
+<style>
+  .post {
+    max-width: 720px;
+    margin: 0 auto;
+    background: color-mix(in srgb, var(--panel) 88%, transparent);
+    padding: 32px;
+    border-radius: 24px;
+    border: 1px solid color-mix(in srgb, var(--text) 10%, transparent);
+    box-shadow: 0 18px 40px var(--shadow);
+  }
+
+  .back {
+    display: inline-block;
+    margin-bottom: 16px;
+    color: var(--muted);
+    text-decoration: none;
+  }
+
+  .back:hover {
+    text-decoration: underline;
+  }
+
+  .eyebrow {
+    margin: 0 0 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-weight: 700;
+    color: var(--muted);
+  }
+
+  h1 {
+    margin: 0 0 10px;
+  }
+
+  .description {
+    margin: 0 0 18px;
+    color: var(--muted);
+  }
+
+  .content {
+    display: grid;
+    gap: 12px;
+    line-height: 1.7;
+    color: var(--text);
+  }
+
+  .content pre {
+    background: var(--panel);
+    padding: 14px;
+    border-radius: 14px;
+    overflow-x: auto;
+    border: 1px solid color-mix(in srgb, var(--text) 8%, transparent);
+  }
+
+  @media (max-width: 720px) {
+    .post {
+      padding: 22px;
+    }
+  }
+</style>

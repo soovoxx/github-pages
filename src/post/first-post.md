@@ -1,5 +1,6 @@
 ---
 title: "Astro + GitHub Pages 첫 글"
+slug: "first-post"
 pubDate: 2025-12-08
 description: "블로그 테스트"
 ---
