@@ -30,10 +30,10 @@ import Footer from '../components/Footer.astro';
       const savedTheme = localStorage.getItem(storageKey);
       const body = document.body;
       const toggleBtn = document.getElementById('themeToggle');
-      const setLabel = (theme) => {
+      const setLabel = (theme: string) => {
         toggleBtn?.setAttribute('aria-label', `Switch to ${theme === 'light' ? 'dark' : 'light'} mode`);
       };
-      const applyTheme = (theme) => {
+      const applyTheme = (theme: string) => {
         body.dataset.theme = theme;
         localStorage.setItem(storageKey, theme);
         setLabel(theme);
