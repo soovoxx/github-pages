@@ -4,7 +4,29 @@
   font-weight: 300;
   font-display: swap;
 }
+
+@font-face {
+  font-family: "Fira Code";
+  src: url("/github-pages/fonts/FiraCode-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-display: swap;
+}
+
+code,
+pre,
+kbd,
+samp {
+  font-family: "Fira Code", ui-monospace, SFMono-Regular, Menlo, Consolas,
+    "Liberation Mono", "Courier New", monospace;
+}
 * {
   font-family: "Suit", Inter, Roboto, "Helvetica Neue", "Arial Nova",
     "Nimbus Sans", Arial, sans-serif;
+}
+
+html,
+body {
+  margin: 0;
+  width: 100%;
+  height: 100%;
 }
