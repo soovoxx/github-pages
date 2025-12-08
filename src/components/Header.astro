@@ -1,0 +1,138 @@
+<header class="site-header">
+  <div class="nav-bar">
+    <a class="brand" href="/">Milky-Way</a>
+    <nav class="nav-links">
+      <a href="#about">About</a>
+      <a href="#posts">Posts</a>
+      <button type="button" id="themeToggle" class="toggle" aria-label="Toggle theme">
+        <svg class="icon sun-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path
+            d="M12 4.5a1 1 0 0 1-1-1V2a1 1 0 1 1 2 0v1.5a1 1 0 0 1-1 1Zm0 17a1 1 0 0 1-1-1V19a1 1 0 1 1 2 0v1.5a1 1 0 0 1-1 1Zm7.5-7.5a1 1 0 0 1-1-1 6.5 6.5 0 1 0-13 0 1 1 0 0 1-2 0 8.5 8.5 0 1 1 17 0 1 1 0 0 1-1 1Zm-11.9 3.9a1 1 0 0 1 0-1.4l1.06-1.06a1 1 0 0 1 1.41 1.41L9 17.9a1 1 0 0 1-1.4 0Zm11.18 0a1 1 0 0 1-1.42 0L16.2 16.9a1 1 0 1 1 1.42-1.42l1.06 1.06a1 1 0 0 1 0 1.42ZM4.5 13a1 1 0 0 1-1 1H2a1 1 0 1 1 0-2h1.5a1 1 0 0 1 1 1Zm17.5 0a1 1 0 0 1-1 1h-1.5a1 1 0 1 1 0-2H21a1 1 0 0 1 1 1Zm-15.6-6.1a1 1 0 0 1 0-1.4L7.56 4.4a1 1 0 0 1 1.4 1.4L7.8 6.9a1 1 0 0 1-1.4 0Zm11.18 0a1 1 0 0 1-1.4 0L16.2 5.8a1 1 0 0 1 1.4-1.4l1.06 1.05a1 1 0 0 1 0 1.46Z"
+            fill="currentColor"
+          />
+        </svg>
+        <svg class="icon moon-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path
+            d="M21 13.06A9 9 0 0 1 11 3a1 1 0 0 1 1.22-1 9 9 0 1 0 9.78 9.78 1 1 0 0 1-1 1.22Z"
+            fill="currentColor"
+          />
+        </svg>
+      </button>
+    </nav>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: color-mix(in srgb, var(--bg) 94%, transparent);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid color-mix(in srgb, var(--text) 10%, transparent);
+  }
+
+  .nav-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 0;
+    gap: 24px;
+    width: min(1200px, 80vw);
+    margin: 0 auto;
+  }
+
+  .brand {
+    font-size: 1.4rem;
+    font-weight: 700;
+    text-decoration: none;
+    color: var(--text);
+    letter-spacing: 0.02em;
+  }
+
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .nav-links a {
+    padding: 10px 14px;
+    text-decoration: none;
+    color: var(--text);
+    border-radius: 12px;
+    font-weight: 600;
+    transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+  }
+
+  .nav-links a:hover {
+    background: color-mix(in srgb, var(--accent) 10%, transparent);
+    transform: translateY(-2px);
+  }
+
+  .toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border: 1px solid color-mix(in srgb, var(--text) 18%, transparent);
+    background: var(--panel);
+    color: var(--text);
+    border-radius: 12px;
+    padding: 10px 14px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: transform 0.2s ease, box-shadow 0.25s ease;
+    box-shadow: 0 10px 25px var(--shadow);
+  }
+
+  .toggle:hover {
+    transform: translateY(-3px) scale(1.01);
+    box-shadow: 0 14px 30px var(--shadow);
+  }
+
+  .icon {
+    width: 20px;
+    height: 20px;
+    transition: opacity 0.2s ease, transform 0.25s ease;
+  }
+
+  .toggle:hover .icon {
+    transform: translateY(-1px) rotate(-5deg);
+  }
+
+  .sun-icon {
+    opacity: 0;
+    transform-origin: center;
+  }
+
+  .moon-icon {
+    opacity: 0;
+    transform-origin: center;
+  }
+
+  :global(body[data-theme='light']) .sun-icon {
+    opacity: 1;
+    transform: none;
+  }
+
+  :global(body[data-theme='dark']) .moon-icon {
+    opacity: 1;
+    transform: none;
+  }
+
+  @media (max-width: 720px) {
+    .nav-bar {
+      width: 90vw;
+    }
+
+    .nav-links {
+      gap: 8px;
+    }
+
+    .nav-links a,
+    .toggle {
+      padding: 8px 12px;
+    }
+  }
+</style>
