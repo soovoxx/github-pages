@@ -1,0 +1,10 @@
+@font-face {
+  font-family: "Suit";
+  src: url("/github-pages/fonts/SUIT-Light.woff2") format("woff2");
+  font-weight: 300;
+  font-display: swap;
+}
+* {
+  font-family: "Suit", Inter, Roboto, "Helvetica Neue", "Arial Nova",
+    "Nimbus Sans", Arial, sans-serif;
+}
