@@ -12,16 +12,18 @@
   font-display: swap;
 }
 
-code,
-pre,
-kbd,
-samp {
-  font-family: "Fira Code", ui-monospace, SFMono-Regular, Menlo, Consolas,
-    "Liberation Mono", "Courier New", monospace;
-}
 * {
   font-family: "Suit", Inter, Roboto, "Helvetica Neue", "Arial Nova",
     "Nimbus Sans", Arial, sans-serif;
+}
+
+pre,
+code,
+kbd,
+samp,
+.line span {
+  font-family: "Fira Code", ui-monospace, Menlo, Consolas, "Courier New",
+    monospace !important;
 }
 
 html,
@@ -29,4 +31,14 @@ body {
   margin: 0;
   width: 100%;
   height: 100%;
+}
+
+pre {
+  padding: 20px;
+  border-radius: 10px;
+}
+p code {
+  background-color: lightgray;
+  padding: 2px 4px;
+  border-radius: 5px;
 }
