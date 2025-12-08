@@ -26,6 +26,21 @@ samp,
     monospace !important;
 }
 
+:not(pre) > code {
+  display: inline-block;
+  background: var(--code-bg);
+  color: var(--text);
+  padding: 3px 6px;
+  border-radius: 6px;
+  border: 1px solid var(--code-border);
+}
+
+pre code {
+  display: block;
+  background: transparent;
+  color: inherit;
+}
+
 html,
 body {
   margin: 0;
@@ -36,9 +51,4 @@ body {
 pre {
   padding: 20px;
   border-radius: 10px;
-}
-p code {
-  background-color: lightgray;
-  padding: 2px 4px;
-  border-radius: 5px;
 }
