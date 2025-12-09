@@ -1,17 +1,21 @@
 ---
-const postEntries = Object.values(import.meta.glob('../post/*.md', { eager: true }));
+import { BLOG_NAME } from "../constants";
+import type { Post } from "../types";
+
+const postEntries: Post[] = Object.values(import.meta.glob('../post/*.md', { eager: true }));
+
 const posts = postEntries
-  .map(({ frontmatter }) => ({
-    title: frontmatter.title,
-    excerpt: frontmatter.description,
-    date: new Date(frontmatter.pubDate),
-    slug: frontmatter.slug,
+  .map((post) => ({
+    title: post.frontmatter.title,
+    summary: post.frontmatter.summary,
+    date: new Date(post.frontmatter.pubDate),
+    slug: post.frontmatter.slug,
   }))
   .filter((post) => Boolean(post.slug))
   .sort((a, b) => Number(b.date) - Number(a.date));
+
 const baseUrl = import.meta.env.BASE_URL?.replace(/\/$/, '') || '';
 ---
-
 <section class="hero" id="title">
   <div class="hero-graphic">
     <div class="planet">
@@ -21,16 +25,12 @@ const baseUrl = import.meta.env.BASE_URL?.replace(/\/$/, '') || '';
     <p class="whisper">Dreamy little blog</p>
   </div>
   <div class="hero-copy">
-    <p class="eyebrow">Milky-Way</p>
+    <p class="eyebrow">{BLOG_NAME}</p>
     <h1>Designful notes from the digital cosmos</h1>
     <p class="lede">
       하늘을 닮은 핑크빛 무드 속에서 프로젝트 메모와 일상을 기록해요. 오른쪽 메뉴를 눌러
       About과 Posts 섹션을 오가며 살펴보세요.
     </p>
-    <div class="hero-actions">
-      <a class="pill" href="#about">About 보기</a>
-      <a class="pill ghost" href="#posts">Posts 이동</a>
-    </div>
   </div>
 </section>
 
@@ -48,7 +48,7 @@ const baseUrl = import.meta.env.BASE_URL?.replace(/\/$/, '') || '';
       디자인과 개발 사이에서 떠오르는 작은 메모를 블로그 포스트로 남기고, 이후에 다시
       찾아볼 수 있도록 정리합니다. 천천히 둘러보며 공감 가는 글을 발견해 보세요.
     </p>
-    <a class="pill" href="https://astro-milky-way.netlify.app/posts/" target="_blank" rel="noreferrer">
+    <a class="pill" href="https://astro-milky-way.netlify.app/" target="_blank" rel="noreferrer">
       참고 사이트 바로가기
     </a>
   </div>
@@ -64,11 +64,11 @@ const baseUrl = import.meta.env.BASE_URL?.replace(/\/$/, '') || '';
       <p class="empty">등록된 글이 아직 없어요.</p>
     ) : (
       posts.map((post) => (
-        <a class="post-card" href={`${baseUrl}/Posts/${post.slug}/`}>
+        <a class="post-card" href={`${baseUrl}/${post.slug}`}>
           <div class="post-visual"></div>
           <div class="post-meta">
             <p class="post-title">{post.title}</p>
-            <p class="post-excerpt">{post.excerpt}</p>
+            <p class="post-summary">{post.summary}</p>
           </div>
         </a>
       ))
@@ -158,32 +158,6 @@ const baseUrl = import.meta.env.BASE_URL?.replace(/\/$/, '') || '';
     color: var(--muted);
     line-height: 1.6;
     margin: 0;
-  }
-
-  .hero-actions {
-    display: flex;
-    gap: 12px;
-    flex-wrap: wrap;
-  }
-
-  .pill {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 12px 16px;
-    border-radius: 999px;
-    background: linear-gradient(120deg, #ef7ab8, #ffb8e2);
-    color: #2d1b2b;
-    text-decoration: none;
-    font-weight: 700;
-    box-shadow: 0 12px 24px var(--shadow);
-    border: 1px solid color-mix(in srgb, var(--text) 10%, transparent);
-    transition: transform 0.15s ease, box-shadow 0.2s ease;
-  }
-
-  .pill:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 16px 30px var(--shadow);
   }
 
   .pill.ghost {

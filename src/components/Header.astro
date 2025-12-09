@@ -1,15 +1,23 @@
+---
+import { BLOG_NAME } from "../constants";
+
+  const baseUrl = '/github-pages';
+  const about = `${baseUrl}/about`;
+  const posts = `${baseUrl}/posts`;
+---
 <header class="site-header">
   <div class="nav-bar">
-    <a class="brand" href="/">Milky-Way</a>
+    <a class="brand" href={baseUrl}>{BLOG_NAME}</a>
     <nav class="nav-links">
-      <a href="#about">About</a>
-      <a href="#posts">Posts</a>
+      <a href={about}>About</a>
+      <a href={posts}>Posts</a>
       <button type="button" id="themeToggle" class="toggle" aria-label="Toggle theme">
         <!-- sun icon -->
         <svg
-          width="24"
-          height="24"
           viewBox="0 0 24 24"
+          class="icon sun-icon"
+          aria-hidden="true"
+          focusable="false"
           xmlns="http://www.w3.org/2000/svg"
         >
           <!-- 배경 투명, 해 아이콘 -->
