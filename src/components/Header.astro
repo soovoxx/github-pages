@@ -1,7 +1,7 @@
 ---
 import { BLOG_NAME } from "../constants";
 
-  const baseUrl = '/github-pages';
+  const baseUrl = import.meta.env.BASE_URL?.replace(/\/$/, "") || "";
   const about = `${baseUrl}/about`;
   const posts = `${baseUrl}/posts`;
 ---
