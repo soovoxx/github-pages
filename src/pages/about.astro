@@ -1,0 +1,295 @@
+---
+import Layout from "../layouts/Layout.astro";
+
+const baseUrl = import.meta.env.BASE_URL?.replace(/\/$/, "") || "";
+---
+<Layout>
+  <section class="about-hero">
+    <div class="hero-text">
+      <p class="eyebrow">Hello, I'm Soovoxx</p>
+      <h1>별 사이를 여행하며 만드는 프론트엔드 개발자</h1>
+      <p class="lede">
+        디자인 시스템부터 작은 사이드 프로젝트까지, 천천히 기록하며 성장하고 있습니다.
+        이 블로그는 우주 한 켠에서 만난 생각과 실험을 모아두는 노트입니다.
+      </p>
+      <div class="cta-row">
+        <a class="pill" href={`${baseUrl}/posts`}>포스트 보러가기</a>
+        <a
+          class="pill ghost"
+          href="https://astro-milky-way.netlify.app/"
+          target="_blank"
+          rel="noreferrer"
+        >
+          영감 준 사이트
+        </a>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="orbit">
+        <span class="planet"></span>
+        <span class="satellite"></span>
+      </div>
+      <p class="caption">디지털 우주를 탐험 중</p>
+    </div>
+  </section>
+
+  <section class="about-grid">
+    <div class="card intro">
+      <h2>About me</h2>
+      <p>
+        사람들에게 도움이 되는 인터페이스를 고민하며, 배운 내용을 글과 코드로 기록합니다.
+        React, Astro, 디자인 시스템에 관심이 많고 최근에는 문서화와 글쓰기에도 집중하고 있습니다.
+      </p>
+      <p>
+        새로운 도구를 실험하거나 재미있는 오픈소스 프로젝트를 발견하면 바로 메모를 남깁니다.
+        언젠가 다시 돌아왔을 때도 흐름을 따라갈 수 있도록 스스로에게 쓰는 편지처럼 기록해요.
+      </p>
+    </div>
+    <div class="card stats">
+      <h3>최근 궤적</h3>
+      <div class="stat-grid">
+        <div class="stat">
+          <p class="stat-value">2019 - Now</p>
+          <p class="stat-label">웹 개발 & 디자인 탐험</p>
+        </div>
+        <div class="stat">
+          <p class="stat-value">✏️ 글 2+편</p>
+          <p class="stat-label">개발 노트 발행</p>
+        </div>
+        <div class="stat">
+          <p class="stat-value">☕ 커피 러버</p>
+          <p class="stat-label">새벽 집중러</p>
+        </div>
+        <div class="stat">
+          <p class="stat-value">🎧 Lofi</p>
+          <p class="stat-label">작업 BGM</p>
+        </div>
+      </div>
+    </div>
+    <div class="card focus">
+      <h3>요즘 집중하는 것</h3>
+      <ul>
+        <li><strong>프론트엔드 설계</strong> — 컴포넌트 구조와 상태 흐름을 단순하게 유지하기</li>
+        <li><strong>Astro 블로그 운영</strong> — 글 목록과 페이지를 더 알기 쉽게 구성하기</li>
+        <li><strong>글쓰기</strong> — 기술 내용도 편안하게 읽히도록 표현 연습하기</li>
+      </ul>
+    </div>
+    <div class="card contact">
+      <h3>Contact</h3>
+      <p>새로운 협업이나 의견이 있다면 언제든지 연락 주세요.</p>
+      <div class="contact-links">
+        <a href="mailto:hello@example.com">hello@example.com</a>
+        <a href="https://github.com/soovoxx" target="_blank" rel="noreferrer">GitHub</a>
+        <a href={`${baseUrl}`}>홈으로 돌아가기</a>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .about-hero {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 32px;
+    align-items: center;
+    padding: 32px;
+    background: color-mix(in srgb, var(--panel) 90%, transparent);
+    border-radius: 28px;
+    border: 1px solid color-mix(in srgb, var(--text) 10%, transparent);
+    box-shadow: 0 20px 50px var(--shadow);
+  }
+
+  .hero-text {
+    display: grid;
+    gap: 14px;
+  }
+
+  .eyebrow {
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--muted);
+    font-weight: 700;
+  }
+
+  h1 {
+    margin: 0;
+    font-size: clamp(1.8rem, 3vw, 2.6rem);
+  }
+
+  .lede {
+    margin: 0;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  .cta-row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 18px;
+    border-radius: 14px;
+    background: var(--accent);
+    color: #1f1028;
+    text-decoration: none;
+    font-weight: 700;
+    box-shadow: 0 12px 28px var(--shadow);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .pill:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 16px 32px var(--shadow);
+  }
+
+  .ghost {
+    background: var(--panel);
+    color: var(--text);
+    border: 1px solid color-mix(in srgb, var(--text) 12%, transparent);
+  }
+
+  .hero-visual {
+    display: grid;
+    justify-items: center;
+    gap: 12px;
+  }
+
+  .orbit {
+    position: relative;
+    width: min(360px, 100%);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, #ffe3f3 0%, #f6b1d8 45%, #d65ab0 90%);
+    box-shadow: 0 16px 40px var(--shadow);
+    overflow: hidden;
+  }
+
+  .planet {
+    position: absolute;
+    width: 38%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    top: 24%;
+    left: 24%;
+    background: linear-gradient(135deg, #fff9ff, #f7c8ff);
+    filter: drop-shadow(0 10px 25px rgba(0, 0, 0, 0.14));
+  }
+
+  .satellite {
+    position: absolute;
+    width: 18%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    right: 14%;
+    bottom: 20%;
+    background: linear-gradient(145deg, #fff7f7, #ffd1ef);
+    box-shadow: 0 10px 24px var(--shadow);
+  }
+
+  .caption {
+    margin: 0;
+    color: var(--muted);
+    font-weight: 600;
+  }
+
+  .about-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 18px;
+    margin-top: 26px;
+  }
+
+  .card {
+    background: color-mix(in srgb, var(--panel) 92%, transparent);
+    border: 1px solid color-mix(in srgb, var(--text) 10%, transparent);
+    border-radius: 24px;
+    padding: 22px;
+    box-shadow: 0 16px 36px var(--shadow);
+  }
+
+  .card h2,
+  .card h3 {
+    margin: 0 0 10px;
+  }
+
+  .card p {
+    margin: 0 0 10px;
+    color: var(--text);
+    line-height: 1.6;
+  }
+
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+    margin-top: 6px;
+  }
+
+  .stat {
+    padding: 14px;
+    border-radius: 14px;
+    background: var(--panel);
+    border: 1px solid color-mix(in srgb, var(--text) 8%, transparent);
+  }
+
+  .stat-value {
+    margin: 0;
+    font-weight: 800;
+  }
+
+  .stat-label {
+    margin: 4px 0 0;
+    color: var(--muted);
+    font-size: 0.95rem;
+  }
+
+  .focus ul {
+    padding-left: 18px;
+    margin: 0;
+    display: grid;
+    gap: 8px;
+  }
+
+  .focus li {
+    line-height: 1.6;
+  }
+
+  .contact-links {
+    display: grid;
+    gap: 8px;
+    margin-top: 10px;
+  }
+
+  .contact a {
+    color: var(--text);
+    text-decoration: none;
+    font-weight: 700;
+  }
+
+  .contact a:hover {
+    text-decoration: underline;
+  }
+
+  @media (max-width: 880px) {
+    .about-hero {
+      grid-template-columns: 1fr;
+    }
+
+    .hero-visual {
+      order: -1;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .about-hero {
+      padding: 24px;
+    }
+  }
+</style>
