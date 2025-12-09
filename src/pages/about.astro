@@ -26,9 +26,9 @@ const posts = `${baseUrl}/posts`
       </div>
     </div>
     <div class="hero-visual">
-      <div class="orbit">
-        <span class="planet"></span>
-        <span class="satellite"></span>
+      <div class="planet">
+        <span class="ring"></span>
+        <span class="sparkle"></span>
       </div>
       <p class="caption">디지털 우주를 탐험 중</p>
     </div>
@@ -162,36 +162,38 @@ const posts = `${baseUrl}/posts`
     gap: 12px;
   }
 
-  .orbit {
+  .planet {
     position: relative;
     width: min(360px, 100%);
     aspect-ratio: 1;
     border-radius: 50%;
-    background: radial-gradient(circle at 30% 30%, #ffe3f3 0%, #f6b1d8 45%, #d65ab0 90%);
+    background: radial-gradient(circle at 30% 30%, #f5edff 0%, #c7b8ff 45%, #9f8cfb 90%);
     box-shadow: 0 16px 40px var(--shadow);
     overflow: hidden;
   }
 
-  .planet {
+  .ring {
     position: absolute;
-    width: 38%;
-    aspect-ratio: 1;
+    inset: 42% -18% auto -18%;
+    height: 40px;
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0.75), rgba(255, 255, 255, 0));
     border-radius: 50%;
-    top: 24%;
-    left: 24%;
-    background: linear-gradient(135deg, #fff9ff, #f7c8ff);
-    filter: drop-shadow(0 10px 25px rgba(0, 0, 0, 0.14));
+    transform: rotate(-12deg);
+    filter: blur(1px);
   }
 
-  .satellite {
+  .sparkle {
     position: absolute;
-    width: 18%;
-    aspect-ratio: 1;
-    border-radius: 50%;
-    right: 14%;
-    bottom: 20%;
-    background: linear-gradient(145deg, #fff7f7, #ffd1ef);
-    box-shadow: 0 10px 24px var(--shadow);
+    width: 12px;
+    height: 12px;
+    background: #fbf8ff;
+    top: 18%;
+    right: 16%;
+    border-radius: 4px;
+    transform: rotate(20deg);
+    box-shadow:
+      -30px 40px 0 2px rgba(251, 248, 255, 0.9),
+      24px 70px 0 2px rgba(251, 248, 255, 0.7);
   }
 
   .caption {
