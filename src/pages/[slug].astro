@@ -46,14 +46,6 @@ const tags = post.frontmatter.tags || [];
     box-shadow: 0 18px 40px var(--shadow);
   }
 
-  .eyebrow {
-    margin: 0;
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
-    font-weight: 700;
-    color: var(--muted);
-  }
-
   h1 {
     margin: 15px 0;
   }
@@ -72,56 +64,6 @@ const tags = post.frontmatter.tags || [];
     background-color: color-mix(in srgb, var(--text) 5%, transparent);
     border-radius: 10px;
     letter-spacing: 0.05em;
-  }
-
-  .content {
-    display: grid;
-    gap: 10px;
-    line-height: 1.7;
-    color: var(--text);
-  }
-
-  .content p {
-    margin: 0 0 0.85em;
-  }
-
-  .content :is(h2, h3, h4, h5, h6) {
-  margin-top: 0.9em;
-  margin-right: 0;
-  margin-bottom: 0;
-  margin-left: 0;
-  line-height: 1.35;
-  }
-
-  .content :is(ul, ol) {
-    margin: 0.35em 0 0.85em;
-    padding-left: 1.2em;
-  }
-
-  .content li + li {
-    margin-top: 0.32em;
-  }
-
-  .content pre {
-    background: var(--code-bg);
-    padding: 14px 16px;
-    border-radius: 14px;
-    overflow-x: auto;
-    border: 1px solid var(--code-border);
-  }
-
-  :global(body[data-theme='dark']) {
-    background: #292b30;
-  }
-
-  :global(body[data-theme='dark']) .post {
-    background: color-mix(in srgb, var(--panel) 82%, transparent);
-    border-color: color-mix(in srgb, var(--text) 12%, transparent);
-  }
-
-  :global(body[data-theme='dark']) .content pre {
-    background: #1a1d25;
-    border-color: color-mix(in srgb, var(--text) 18%, transparent);
   }
 
   @media (max-width: 900px) {
