@@ -1,6 +1,7 @@
 ---
 import { BLOG_NAME } from "../constants";
 import type { Post } from "../types";
+import Front from "./Front.astro";
 
 const postEntries: Post[] = Object.values(import.meta.glob('../post/*.md', { eager: true }));
 
@@ -17,6 +18,8 @@ const posts = postEntries
 const limitedPosts = posts.slice(0, 10);
 
 const baseUrl = import.meta.env.BASE_URL?.replace(/\/$/, '') || '';
+const postUrl = `${baseUrl}/posts`;
+const aboutUrl = `${baseUrl}/about`;
 ---
 <section class="hero" id="title">
   <div class="hero-graphic">
@@ -28,36 +31,19 @@ const baseUrl = import.meta.env.BASE_URL?.replace(/\/$/, '') || '';
   </div>
   <div class="hero-copy">
     <p class="eyebrow">{BLOG_NAME}</p>
-    <h1>Today’s learning leaves a new dot in my universe</h1>
-    <p class="lede">프로젝트 메모와 일상을 기록해요.</p>
+    <h1>Small notes for my future self.</h1>
+    <p class="lede">매일 배운 것들을, 나중에 다시 꺼내볼 수 있게 기록합니다.
+개발하면서 부딪힌 문제, 풀어낸 방법, 그리고 사이사이의 일상까지 남겨요.</p>
   </div>
 </section>
 
-<section class="section about" id="about">
-  <div class="section-heading">
-    <h2>About</h2>
-    <p>배운 것들을 기록하고, 개발의 여정을 남기는 나만의 작은 우주</p>
-  </div>
-  <div class="about-body">
-    <p>
-      Proin bibendum risus non mi congue, in posuere nisi facilisis. Sed id felis in purus varius
-      tincidunt. 프로젝트를 진행하며 얻은 생각과 배운 점들을 담담하게 적고 있어요.
-    </p>
-    <p>
-      디자인과 개발 사이에서 떠오르는 작은 메모를 블로그 포스트로 남기고, 이후에 다시
-      찾아볼 수 있도록 정리합니다. 천천히 둘러보며 공감 가는 글을 발견해 보세요.
-    </p>
-    <a class="pill" href="https://astro-milky-way.netlify.app/" target="_blank" rel="noreferrer">
-      참고 사이트 바로가기
-    </a>
-  </div>
-</section>
+<!-- Reordered sections: Posts first, then About -->
 
 <section class="section posts" id="posts">
   <div class="section-heading">
     <h2>Posts</h2>
     <p>가볍게 읽을 수 있는 최근 글 목록을 준비했어요.</p>
-    <a class="pill ghost" href={`${baseUrl}/posts`}>더 많은 글 보기</a>
+    <Front text="더 많은 글 보기" link={postUrl} />
   </div>
   <div class="post-grid">
     {limitedPosts.length === 0 ? (
@@ -76,6 +62,19 @@ const baseUrl = import.meta.env.BASE_URL?.replace(/\/$/, '') || '';
   </div>
 </section>
 
+<section class="section about" id="about">
+  <div class="section-heading">
+    <h2>About</h2>
+    <p>이곳은 배움과 개발 여정을 기록하는 공간입니다.</p>
+  </div>
+  <div class="about-body">
+    <p>
+      하루 동안 배운 것, 프로젝트하면서 고민했던 점들을 가볍게 기록해요.
+      디테일한 소개와 스택, 이력은 About 페이지에 정리해 두었습니다.
+    </p>
+    <Front text="더 자세히 보기" link={aboutUrl} />
+  </div>
+</section>
 <style>
   .hero {
     display: grid;
