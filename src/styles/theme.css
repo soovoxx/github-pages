@@ -1,0 +1,32 @@
+:root {
+  --bg: #ffffff;
+  --panel: #ffffff;
+  --text: #31253b;
+  --muted: #6a4b76;
+  --accent: #c4b4ff;
+  --shadow: rgba(49, 37, 59, 0.12);
+  --code-bg: #f3edf8;
+  --code-border: rgba(49, 37, 59, 0.12);
+}
+
+body[data-theme='dark'] {
+  --bg: #292b30;
+  --panel: #15161c;
+  --text: #f4f5f7;
+  --muted: #c4c8d1;
+  --accent: #d6c5ff;
+  --shadow: rgba(0, 0, 0, 0.4);
+  --code-bg: #1e222b;
+  --code-border: color-mix(in srgb, var(--text) 16%, transparent);
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  transition: background 0.3s ease, color 0.3s ease;
+}
