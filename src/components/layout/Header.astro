@@ -137,12 +137,12 @@ import { BLOG_NAME } from "../../constants";
     transform-origin: center;
   }
 
-  :global(body[data-theme='light']) .sun-icon {
+  :global(:root[data-theme='light']) .sun-icon {
     opacity: 1;
     transform: none;
   }
 
-  :global(body[data-theme='dark']) .moon-icon {
+  :global(:root[data-theme='dark']) .moon-icon {
     opacity: 1;
     transform: none;
   }
