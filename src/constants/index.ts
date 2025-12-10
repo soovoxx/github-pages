@@ -1,1 +1,1 @@
-export const BLOG_NAME = "soovoxx";
+export * from "./blog";

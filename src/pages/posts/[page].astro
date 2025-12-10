@@ -1,23 +1,24 @@
 ---
 import Layout from "../../layouts/Layout.astro";
-import { getAllPosts, getPaginationMeta, PAGE_SIZE } from "../../lib/posts";
+import { getAllPosts, getPaginationMeta } from '../../lib/post'
+import { POSTS_PER_PAGE } from '../../constants/blog'
 
 // GitHub Pages용 baseUrl (예: /github-pages)
 const baseUrl = import.meta.env.BASE_URL?.replace(/\/$/, "") || "";
 
 const posts = getAllPosts();
 
-const { totalPages } = getPaginationMeta(posts.length, PAGE_SIZE);
+const { totalPages } = getPaginationMeta(posts.length, POSTS_PER_PAGE);
 
 const rawPage = Astro.params.page;
 const requestedPage = Number.parseInt(rawPage ?? "1", 10) || 1;
 const currentPage = Math.min(Math.max(requestedPage, 1), totalPages);
 
-const start = (currentPage - 1) * PAGE_SIZE;
-const visiblePosts = posts.slice(start, start + PAGE_SIZE);
+const start = (currentPage - 1) * POSTS_PER_PAGE;
+const visiblePosts = posts.slice(start, start + POSTS_PER_PAGE);
 
 export async function getStaticPaths() {
-  const totalPages = getPaginationMeta(getAllPosts().length, PAGE_SIZE).totalPages;
+  const totalPages = getPaginationMeta(getAllPosts().length, POSTS_PER_PAGE).totalPages;
 
   return Array.from({ length: totalPages }).map((_, i) => ({
     params: { page: String(i + 1) },

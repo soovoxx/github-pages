@@ -1,4 +1,5 @@
 import type { Post } from "../types";
+import { POSTS_PER_PAGE } from "../constants";
 
 export type PostSummary = {
   title: string;
@@ -8,11 +9,9 @@ export type PostSummary = {
   tags: string[];
 };
 
-export const PAGE_SIZE = 10;
-
 export const getAllPosts = (): PostSummary[] => {
   const postEntries: Post[] = Object.values(
-    import.meta.glob("../post/*.md", { eager: true })
+    import.meta.glob("../content/posts/*.md", { eager: true })
   );
 
   return postEntries
@@ -27,7 +26,10 @@ export const getAllPosts = (): PostSummary[] => {
     .sort((a, b) => Number(b.date) - Number(a.date));
 };
 
-export const getPaginationMeta = (totalItems: number, pageSize: number) => {
+export const getPaginationMeta = (
+  totalItems: number,
+  pageSize = POSTS_PER_PAGE
+) => {
   const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
   return { totalPages };
 };
