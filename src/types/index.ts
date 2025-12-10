@@ -8,6 +8,7 @@ interface PostFrontmatter {
   summary?: string;
   category?: string;
   description?: string;
+  thumbnail?: string;
 }
 
 // Astro Markdown files export frontmatter fields both under `frontmatter`
