@@ -1,13 +1,27 @@
 ---
-import Layout from "../layouts/Layout.astro";
-import { getAllPosts, getPaginationMeta } from "../lib/posts";
+import Layout from "../../../layouts/Layout.astro";
+import { getAllPosts, getPaginationMeta } from "../../../lib/posts";
 
 const baseUrl = import.meta.env.BASE_URL?.replace(/\/$/, "") || "";
-const posts = getAllPosts();
-
 const pageSize = 10;
-const { totalPages } = getPaginationMeta(posts.length, pageSize);
-const currentPage = 1;
+
+export async function getStaticPaths() {
+  const posts = getAllPosts();
+  const { totalPages } = getPaginationMeta(posts.length, pageSize);
+
+  return Array.from({ length: Math.max(totalPages - 1, 0) }, (_, index) => {
+    const page = index + 2; // start from page 2 because page 1 is /posts
+    return {
+      params: { page: String(page) },
+      props: { posts, totalPages },
+    };
+  });
+}
+
+const { page } = Astro.params;
+const { posts, totalPages } = Astro.props;
+const parsedPage = Number.parseInt(page || "1", 10) || 1;
+const currentPage = Math.min(Math.max(parsedPage, 1), totalPages);
 const start = (currentPage - 1) * pageSize;
 const visiblePosts = posts.slice(start, start + pageSize);
 ---
@@ -48,25 +62,16 @@ const visiblePosts = posts.slice(start, start + pageSize);
 
   <div class="pagination">
     {Array.from({ length: totalPages }).map((_, index) => {
-      const page = index + 1;
-      const isActive = page === currentPage;
-      const href = `${baseUrl}/posts${page === 1 ? "" : `/page/${page}`}`;
+      const pageNumber = index + 1;
+      const isActive = pageNumber === currentPage;
+      const href = `${baseUrl}/posts${pageNumber === 1 ? "" : `/page/${pageNumber}`}`;
       return (
         <a class={`page-link ${isActive ? "active" : ""}`} href={href}>
-          {page}
+          {pageNumber}
         </a>
       );
     })}
   </div>
-
-  <script is:inline>
-    const params = new URLSearchParams(window.location.search);
-    const pageParam = Number.parseInt(params.get("page") || "1", 10) || 1;
-    if (pageParam > 1) {
-      const target = `${baseUrl}/posts/page/${pageParam}`;
-      window.location.replace(target);
-    }
-  </script>
 </Layout>
 
 <style>
