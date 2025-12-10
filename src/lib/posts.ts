@@ -8,6 +8,8 @@ export type PostSummary = {
   tags: string[];
 };
 
+export const PAGE_SIZE = 10;
+
 export const getAllPosts = (): PostSummary[] => {
   const postEntries: Post[] = Object.values(
     import.meta.glob("../post/*.md", { eager: true })
