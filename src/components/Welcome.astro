@@ -5,7 +5,7 @@ import Front from "./Front.astro";
 
 const postEntries: Post[] = Object.values(import.meta.glob('../post/*.md', { eager: true }));
 
-const defaultImagePath = '/article-default-image.png'
+const defaultImagePath = '/github-pages/article-default-image.png'
 
 const posts = postEntries
   .map((post) => ({
