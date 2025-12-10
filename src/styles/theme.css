@@ -7,9 +7,12 @@
   --shadow: rgba(49, 37, 59, 0.12);
   --code-bg: #f3edf8;
   --code-border: rgba(49, 37, 59, 0.12);
+  --table-border: #d0d7de;
+  --table-header: #f6f8fa;
+  --table-row-alt: #f6f8fa;
 }
 
-:root[data-theme="dark"] {
+body[data-theme="dark"] {
   --bg: #292b30;
   --panel: #15161c;
   --text: #f4f5f7;
@@ -18,6 +21,9 @@
   --shadow: rgba(0, 0, 0, 0.4);
   --code-bg: #1e222b;
   --code-border: color-mix(in srgb, var(--text) 16%, transparent);
+  --table-border: #30363d;
+  --table-header: #1f242c;
+  --table-row-alt: #1a1f27;
 }
 
 html,

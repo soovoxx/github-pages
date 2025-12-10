@@ -33,3 +33,65 @@
   overflow-x: auto;
   border: 1px solid var(--code-border);
 }
+.content {
+  display: grid;
+  gap: 10px;
+  line-height: 1.7;
+  color: var(--text);
+}
+
+.content p {
+  margin: 0 0 0.85em;
+}
+
+.content :is(h2, h3, h4, h5, h6) {
+  margin-top: 0.9em;
+  margin-right: 0;
+  margin-bottom: 0;
+  margin-left: 0;
+  line-height: 1.35;
+}
+
+.content :is(ul, ol) {
+  margin: 0.35em 0 0.85em;
+  padding-left: 1.2em;
+}
+
+.content li + li {
+  margin-top: 0.32em;
+}
+
+.content pre {
+  background: var(--code-bg);
+  padding: 14px 16px;
+  border-radius: 14px;
+  overflow-x: auto;
+  border: 1px solid var(--code-border);
+}
+
+.content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1em 0;
+  border: 1px solid var(--table-border);
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--panel);
+}
+
+.content th,
+.content td {
+  padding: 10px 12px;
+  border: 1px solid var(--table-border);
+  text-align: left;
+  line-height: 1.5;
+}
+
+.content th {
+  background: var(--table-header);
+  font-weight: 700;
+}
+
+.content tbody tr:nth-child(odd) {
+  background: var(--table-row-alt);
+}
