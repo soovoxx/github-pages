@@ -18,7 +18,7 @@ const posts = postEntries
 const limitedPosts = posts.slice(0, 10);
 
 const baseUrl = import.meta.env.BASE_URL?.replace(/\/$/, '') || '';
-const postUrl = `${baseUrl}/posts`;
+const postUrl = `${baseUrl}/posts/1`;
 const aboutUrl = `${baseUrl}/about`;
 ---
 <section class="hero" id="title">
@@ -32,8 +32,7 @@ const aboutUrl = `${baseUrl}/about`;
   <div class="hero-copy">
     <p class="eyebrow">{BLOG_NAME}</p>
     <h1>Small notes for my future self.</h1>
-    <p class="lede">매일 배운 것들을, 나중에 다시 꺼내볼 수 있게 기록합니다.
-개발하면서 부딪힌 문제, 풀어낸 방법, 그리고 사이사이의 일상까지 남겨요.</p>
+    <p class="lede">매일 배운 것들을, 나중에 다시 꺼내볼 수 있게 기록합니다. <br/> 그리고 사이사이의 일상까지 남겨요.</p>
   </div>
 </section>
 

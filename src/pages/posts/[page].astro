@@ -1,20 +1,55 @@
 ---
-import Layout from "../layouts/Layout.astro";
-import { getAllPosts, getPaginationMeta } from "../lib/posts";
+import Layout from "../../layouts/Layout.astro";
+import type { Post } from "../../types";
 
+// GitHub Pages용 baseUrl (예: /github-pages)
 const baseUrl = import.meta.env.BASE_URL?.replace(/\/$/, "") || "";
-const posts = getAllPosts();
 
+// 1) 모든 포스트 로드
+const postEntries: Post[] = Object.values(
+  import.meta.glob("../../post/*.md", { eager: true })
+) as Post[];
+
+const posts = postEntries
+  .filter((post) => Boolean(post.frontmatter.slug))
+  .map((post) => ({
+    title: post.frontmatter.title,
+    summary: post.frontmatter.summary || "",
+    date: new Date(post.frontmatter.pubDate),
+    slug: post.frontmatter.slug,
+    tags: post.frontmatter.tags || [],
+  }))
+  .sort((a, b) => Number(b.date) - Number(a.date));
+
+// 2) 페이징 계산 (페이지 사이즈, 전체 페이지 수)
 const pageSize = 10;
-const { totalPages } = getPaginationMeta(posts.length, pageSize);
-const currentPage = 1;
+const totalPages = Math.max(1, Math.ceil(posts.length / pageSize));
+
+// 3) URL 경로에서 page 파라미터 읽기 (/posts/2 -> "2")
+const rawPage = Astro.params.page;
+const requestedPage = Number.parseInt(rawPage ?? "1", 10) || 1;
+const currentPage = Math.min(Math.max(requestedPage, 1), totalPages);
+
+// 4) 현재 페이지에서 보여줄 글 슬라이스
 const start = (currentPage - 1) * pageSize;
 const visiblePosts = posts.slice(start, start + pageSize);
-const serializedPosts = posts.map((post) => ({
-  ...post,
-  date: post.date.toISOString(),
-}));
+
+// 5) 정적 경로 생성: /posts/1, /posts/2, ...
+export async function getStaticPaths() {
+  const postEntries: Post[] = Object.values(
+    import.meta.glob("../../post/*.md", { eager: true })
+  ) as Post[];
+
+  const posts = postEntries.filter((post) => Boolean(post.frontmatter.slug));
+  const pageSize = 10;
+  const totalPages = Math.max(1, Math.ceil(posts.length / pageSize));
+
+  return Array.from({ length: totalPages }).map((_, i) => ({
+    params: { page: String(i + 1) },
+  }));
+}
 ---
+
 <Layout>
   <section class="post-section">
     <div class="page-header">
@@ -54,115 +89,14 @@ const serializedPosts = posts.map((post) => ({
     {Array.from({ length: totalPages }).map((_, index) => {
       const page = index + 1;
       const isActive = page === currentPage;
-      const href = `${baseUrl}/posts${page === 1 ? "" : `?page=${page}`}`;
+      const href = `${baseUrl}/posts/${page}`;
       return (
-        <a class={`page-link ${isActive ? "active" : ""}`} href={href} data-page={page}>
+        <a class={`page-link ${isActive ? "active" : ""}`} href={href}>
           {page}
         </a>
       );
     })}
   </div>
-
-  <script id="post-data" type="application/json">
-    {JSON.stringify(serializedPosts).replace(/</g, "\\u003c")}
-  </script>
-
-  <script is:inline>
-    const baseUrl = "{baseUrl}";
-    const posts = JSON.parse(document.getElementById("post-data").textContent || "[]");
-    const pageSize = {pageSize};
-    const totalPages = Math.max(1, Math.ceil(posts.length / pageSize));
-
-    const params = new URLSearchParams(window.location.search);
-    const initialPage = Number.parseInt(params.get("page") || "1", 10) || 1;
-
-    const postContainer = document.querySelector(".post-column-1");
-    const paginationLinks = Array.from(document.querySelectorAll(".pagination .page-link"));
-
-    function clampPage(page) {
-      return Math.min(Math.max(page, 1), totalPages);
-    }
-
-    function renderPosts(page) {
-      if (!postContainer) return;
-      const currentPage = clampPage(page);
-      const start = (currentPage - 1) * pageSize;
-      const visiblePosts = posts.slice(start, start + pageSize);
-
-      if (visiblePosts.length === 0) {
-        postContainer.innerHTML = '<p class="empty">등록된 글이 아직 없어요.</p>';
-        return;
-      }
-
-      const items = visiblePosts
-        .map((post) => {
-          const dateLabel = new Date(post.date).toLocaleDateString("ko-KR");
-          const tags = Array.isArray(post.tags) ? post.tags : [];
-          return `
-            <a class="post-row" href="${baseUrl}/${post.slug}">
-              <div class="row-meta">
-                <p class="date">${dateLabel}</p>
-                <h3>${post.title}</h3>
-                <p class="summary">${post.summary}</p>
-                <div class="tags">
-                  ${tags.map((tag) => `<span class="tag">#${tag}</span>`).join("")}
-                </div>
-              </div>
-            </a>
-          `;
-        })
-        .join("");
-
-      postContainer.innerHTML = items;
-    }
-
-    function updatePagination(page) {
-      const currentPage = clampPage(page);
-      paginationLinks.forEach((link) => {
-        const pageValue = Number.parseInt(link.dataset.page || "1", 10) || 1;
-        if (pageValue === 1) {
-          link.href = `${baseUrl}/posts`;
-        } else {
-          link.href = `${baseUrl}/posts?page=${pageValue}`;
-        }
-        if (pageValue === currentPage) {
-          link.classList.add("active");
-        } else {
-          link.classList.remove("active");
-        }
-      });
-    }
-
-    function setPage(page, pushState = false) {
-      const currentPage = clampPage(page);
-      params.set("page", String(currentPage));
-      const newSearch = currentPage === 1 ? "" : `?${params.toString()}`;
-      const newUrl = `${window.location.pathname}${newSearch}`;
-      if (pushState) {
-        window.history.pushState({}, "", newUrl);
-      } else {
-        window.history.replaceState({}, "", newUrl);
-      }
-      renderPosts(currentPage);
-      updatePagination(currentPage);
-    }
-
-    paginationLinks.forEach((link) => {
-      link.addEventListener("click", (event) => {
-        const pageValue = Number.parseInt(link.dataset.page || "1", 10) || 1;
-        if (pageValue <= 0) return;
-        event.preventDefault();
-        setPage(pageValue, true);
-      });
-    });
-
-    window.addEventListener("popstate", () => {
-      const pageValue = Number.parseInt(new URLSearchParams(window.location.search).get("page") || "1", 10) || 1;
-      setPage(pageValue, false);
-    });
-
-    setPage(initialPage);
-  </script>
 </Layout>
 
 <style>
@@ -182,6 +116,7 @@ const serializedPosts = posts.map((post) => ({
   .page-header h1 {
     margin: 4px 0 8px;
   }
+
   .counter {
     background: var(--panel);
     border-radius: 18px;

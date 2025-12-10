@@ -8,9 +8,9 @@ export type PostSummary = {
   tags: string[];
 };
 
-export function getAllPosts(): PostSummary[] {
+export const getAllPosts = (): PostSummary[] => {
   const postEntries: Post[] = Object.values(
-    import.meta.glob("../post/*.md", { eager: true }),
+    import.meta.glob("../post/*.md", { eager: true })
   );
 
   return postEntries
@@ -23,9 +23,9 @@ export function getAllPosts(): PostSummary[] {
       tags: post.frontmatter.tags || [],
     }))
     .sort((a, b) => Number(b.date) - Number(a.date));
-}
+};
 
-export function getPaginationMeta(totalItems: number, pageSize: number) {
+export const getPaginationMeta = (totalItems: number, pageSize: number) => {
   const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
   return { totalPages };
-}
+};
