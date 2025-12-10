@@ -10,6 +10,10 @@ const { totalPages } = getPaginationMeta(posts.length, pageSize);
 const currentPage = 1;
 const start = (currentPage - 1) * pageSize;
 const visiblePosts = posts.slice(start, start + pageSize);
+const serializedPosts = posts.map((post) => ({
+  ...post,
+  date: post.date.toISOString(),
+}));
 ---
 <Layout>
   <section class="post-section">
@@ -50,22 +54,114 @@ const visiblePosts = posts.slice(start, start + pageSize);
     {Array.from({ length: totalPages }).map((_, index) => {
       const page = index + 1;
       const isActive = page === currentPage;
-      const href = `${baseUrl}/posts${page === 1 ? "" : `/page/${page}`}`;
+      const href = `${baseUrl}/posts${page === 1 ? "" : `?page=${page}`}`;
       return (
-        <a class={`page-link ${isActive ? "active" : ""}`} href={href}>
+        <a class={`page-link ${isActive ? "active" : ""}`} href={href} data-page={page}>
           {page}
         </a>
       );
     })}
   </div>
 
+  <script id="post-data" type="application/json">
+    {JSON.stringify(serializedPosts).replace(/</g, "\\u003c")}
+  </script>
+
   <script is:inline>
+    const baseUrl = "{baseUrl}";
+    const posts = JSON.parse(document.getElementById("post-data").textContent || "[]");
+    const pageSize = {pageSize};
+    const totalPages = Math.max(1, Math.ceil(posts.length / pageSize));
+
     const params = new URLSearchParams(window.location.search);
-    const pageParam = Number.parseInt(params.get("page") || "1", 10) || 1;
-    if (pageParam > 1) {
-      const target = `${baseUrl}/posts/page/${pageParam}`;
-      window.location.replace(target);
+    const initialPage = Number.parseInt(params.get("page") || "1", 10) || 1;
+
+    const postContainer = document.querySelector(".post-column-1");
+    const paginationLinks = Array.from(document.querySelectorAll(".pagination .page-link"));
+
+    function clampPage(page) {
+      return Math.min(Math.max(page, 1), totalPages);
     }
+
+    function renderPosts(page) {
+      if (!postContainer) return;
+      const currentPage = clampPage(page);
+      const start = (currentPage - 1) * pageSize;
+      const visiblePosts = posts.slice(start, start + pageSize);
+
+      if (visiblePosts.length === 0) {
+        postContainer.innerHTML = '<p class="empty">등록된 글이 아직 없어요.</p>';
+        return;
+      }
+
+      const items = visiblePosts
+        .map((post) => {
+          const dateLabel = new Date(post.date).toLocaleDateString("ko-KR");
+          const tags = Array.isArray(post.tags) ? post.tags : [];
+          return `
+            <a class="post-row" href="${baseUrl}/${post.slug}">
+              <div class="row-meta">
+                <p class="date">${dateLabel}</p>
+                <h3>${post.title}</h3>
+                <p class="summary">${post.summary}</p>
+                <div class="tags">
+                  ${tags.map((tag) => `<span class="tag">#${tag}</span>`).join("")}
+                </div>
+              </div>
+            </a>
+          `;
+        })
+        .join("");
+
+      postContainer.innerHTML = items;
+    }
+
+    function updatePagination(page) {
+      const currentPage = clampPage(page);
+      paginationLinks.forEach((link) => {
+        const pageValue = Number.parseInt(link.dataset.page || "1", 10) || 1;
+        if (pageValue === 1) {
+          link.href = `${baseUrl}/posts`;
+        } else {
+          link.href = `${baseUrl}/posts?page=${pageValue}`;
+        }
+        if (pageValue === currentPage) {
+          link.classList.add("active");
+        } else {
+          link.classList.remove("active");
+        }
+      });
+    }
+
+    function setPage(page, pushState = false) {
+      const currentPage = clampPage(page);
+      params.set("page", String(currentPage));
+      const newSearch = currentPage === 1 ? "" : `?${params.toString()}`;
+      const newUrl = `${window.location.pathname}${newSearch}`;
+      if (pushState) {
+        window.history.pushState({}, "", newUrl);
+      } else {
+        window.history.replaceState({}, "", newUrl);
+      }
+      renderPosts(currentPage);
+      updatePagination(currentPage);
+    }
+
+    paginationLinks.forEach((link) => {
+      link.addEventListener("click", (event) => {
+        const pageValue = Number.parseInt(link.dataset.page || "1", 10) || 1;
+        if (pageValue <= 0) return;
+        event.preventDefault();
+        setPage(pageValue, true);
+      });
+    });
+
+    window.addEventListener("popstate", () => {
+      const pageValue = Number.parseInt(new URLSearchParams(window.location.search).get("page") || "1", 10) || 1;
+      setPage(pageValue, false);
+    });
+
+    setPage(initialPage);
   </script>
 </Layout>
 
