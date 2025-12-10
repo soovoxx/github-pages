@@ -1,48 +1,23 @@
 ---
 import Layout from "../../layouts/Layout.astro";
-import type { Post } from "../../types";
+import { getAllPosts, getPaginationMeta, PAGE_SIZE } from "../../lib/posts";
 
 // GitHub Pages용 baseUrl (예: /github-pages)
 const baseUrl = import.meta.env.BASE_URL?.replace(/\/$/, "") || "";
 
-// 1) 모든 포스트 로드
-const postEntries: Post[] = Object.values(
-  import.meta.glob("../../post/*.md", { eager: true })
-) as Post[];
+const posts = getAllPosts();
 
-const posts = postEntries
-  .filter((post) => Boolean(post.frontmatter.slug))
-  .map((post) => ({
-    title: post.frontmatter.title,
-    summary: post.frontmatter.summary || "",
-    date: new Date(post.frontmatter.pubDate),
-    slug: post.frontmatter.slug,
-    tags: post.frontmatter.tags || [],
-  }))
-  .sort((a, b) => Number(b.date) - Number(a.date));
+const { totalPages } = getPaginationMeta(posts.length, PAGE_SIZE);
 
-// 2) 페이징 계산 (페이지 사이즈, 전체 페이지 수)
-const pageSize = 10;
-const totalPages = Math.max(1, Math.ceil(posts.length / pageSize));
-
-// 3) URL 경로에서 page 파라미터 읽기 (/posts/2 -> "2")
 const rawPage = Astro.params.page;
 const requestedPage = Number.parseInt(rawPage ?? "1", 10) || 1;
 const currentPage = Math.min(Math.max(requestedPage, 1), totalPages);
 
-// 4) 현재 페이지에서 보여줄 글 슬라이스
-const start = (currentPage - 1) * pageSize;
-const visiblePosts = posts.slice(start, start + pageSize);
+const start = (currentPage - 1) * PAGE_SIZE;
+const visiblePosts = posts.slice(start, start + PAGE_SIZE);
 
-// 5) 정적 경로 생성: /posts/1, /posts/2, ...
 export async function getStaticPaths() {
-  const postEntries: Post[] = Object.values(
-    import.meta.glob("../../post/*.md", { eager: true })
-  ) as Post[];
-
-  const posts = postEntries.filter((post) => Boolean(post.frontmatter.slug));
-  const pageSize = 10;
-  const totalPages = Math.max(1, Math.ceil(posts.length / pageSize));
+  const totalPages = getPaginationMeta(getAllPosts().length, PAGE_SIZE).totalPages;
 
   return Array.from({ length: totalPages }).map((_, i) => ({
     params: { page: String(i + 1) },
