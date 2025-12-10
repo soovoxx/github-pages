@@ -75,7 +75,6 @@
   margin: 1em 0;
   border: 1px solid var(--table-border);
   border-radius: 10px;
-  overflow: hidden;
   background: var(--panel);
 }
 
