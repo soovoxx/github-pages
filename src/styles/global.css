@@ -24,6 +24,22 @@ body {
     "Nimbus Sans", Arial, sans-serif;
 }
 
+a {
+  color: var(--accent);
+  text-decoration-color: color-mix(in srgb, var(--accent) 70%, transparent);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+}
+
+a:visited {
+  color: color-mix(in srgb, var(--accent) 75%, var(--text) 25%);
+}
+
+a:hover,
+a:focus-visible {
+  text-decoration-color: var(--accent);
+}
+
 pre,
 code,
 kbd,
