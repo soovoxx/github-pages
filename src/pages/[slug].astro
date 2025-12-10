@@ -1,4 +1,5 @@
 ---
+import Back from '../components/Back.astro';
 import Layout from '../layouts/Layout.astro';
 import type { Post } from '../types';
 
@@ -22,12 +23,7 @@ const tags = post.frontmatter.tags || [];
 
 <Layout>
   <article class="post">
-    <a class="back" href={`${baseUrl}/posts`}>
-      <svg class="back-icon" viewBox="0 0 20 20" aria-hidden="true" focusable="false">
-        <path d="M11.5 4.5 6 10l5.5 5.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
-      </svg>
-      Posts로 돌아가기
-    </a>
+    <Back link={`${baseUrl}/posts`} text="Posts로 돌아가기" />
     <p class="eyebrow">{new Date(pubDate).toLocaleDateString('ko-KR')}</p>
     <h1>{title}</h1>
     <div class="tags">
@@ -48,24 +44,6 @@ const tags = post.frontmatter.tags || [];
     border-radius: 24px;
     border: 1px solid color-mix(in srgb, var(--text) 10%, transparent);
     box-shadow: 0 18px 40px var(--shadow);
-  }
-
-  .back {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 16px;
-    color: var(--muted);
-    text-decoration: none;
-  }
-
-  .back:hover {
-    text-decoration: underline;
-  }
-
-  .back-icon {
-    width: 18px;
-    height: 18px;
   }
 
   .eyebrow {
