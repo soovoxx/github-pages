@@ -33,3 +33,15 @@ export const getPaginationMeta = (
   const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
   return { totalPages };
 };
+
+export const getAdjacentPosts = (
+  slug: string
+): { prevPost?: PostSummary; nextPost?: PostSummary } => {
+  const allPosts = getAllPosts();
+
+  const currentIndex = allPosts.findIndex((p) => p.slug === slug);
+  const prevPost = currentIndex >= 0 ? allPosts[currentIndex + 1] : undefined; // older
+  const nextPost = currentIndex > 0 ? allPosts[currentIndex - 1] : undefined; // newer
+
+  return { prevPost, nextPost };
+};

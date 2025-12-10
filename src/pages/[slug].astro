@@ -1,6 +1,7 @@
 ---
 import Back from '../components/section/Back.astro';
 import Layout from '../layouts/Layout.astro';
+import { getAdjacentPosts } from '../lib';
 import type { Post } from '../types';
 
 const baseUrl = import.meta.env.BASE_URL?.replace(/\/$/, '') || '';
@@ -19,6 +20,8 @@ export async function getStaticPaths() {
 const { post } = Astro.props;
 const { Content, frontmatter: { pubDate, title, summary } } = post;
 const tags = post.frontmatter.tags || [];
+
+const {prevPost, nextPost} = getAdjacentPosts(post.frontmatter.slug)
 ---
 
 <Layout>
@@ -32,6 +35,26 @@ const tags = post.frontmatter.tags || [];
     <div class="content">
       <Content />
     </div>
+    {(prevPost || nextPost) && (
+      <nav class="post-nav" aria-label="Post navigation">
+        {prevPost ? (
+          <a class="nav-link" href={`${baseUrl}/${prevPost.slug}`}>
+            <span class="nav-label">이전 글</span>
+            <span class="nav-title">{prevPost.title}</span>
+          </a>
+        ) : (
+          <span></span>
+        )}
+        {nextPost ? (
+          <a class="nav-link" href={`${baseUrl}/${nextPost.slug}`}>
+            <span class="nav-label">다음 글</span>
+            <span class="nav-title">{nextPost.title}</span>
+          </a>
+        ) : (
+          <span></span>
+        )}
+      </nav>
+    )}
   </article>
 </Layout>
 
@@ -71,5 +94,39 @@ const tags = post.frontmatter.tags || [];
     .post {
       padding: 22px;
     }
+  }
+
+  .post-nav {
+    margin-top: 28px;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .nav-link {
+    display: grid;
+    gap: 4px;
+    padding: 12px 14px;
+    background: var(--panel);
+    border: 1px solid color-mix(in srgb, var(--text) 10%, transparent);
+    border-radius: 12px;
+    color: var(--text);
+    text-decoration: none;
+    box-shadow: 0 10px 24px var(--shadow);
+    transition: transform 0.15s ease, box-shadow 0.2s ease;
+  }
+
+  .nav-link:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 14px 30px var(--shadow);
+  }
+
+  .nav-label {
+    font-size: 0.9rem;
+    color: var(--muted);
+  }
+
+  .nav-title {
+    font-weight: 700;
   }
 </style>
