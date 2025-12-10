@@ -1,7 +1,7 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import { getAllPosts, getPaginationMeta } from '../../lib/post'
-import { POSTS_PER_PAGE } from '../../constants/blog'
+import { POSTS_PER_PAGE } from '../../constants'
 
 // GitHub Pages용 baseUrl (예: /github-pages)
 const baseUrl = import.meta.env.BASE_URL?.replace(/\/$/, "") || "";
@@ -218,6 +218,9 @@ export async function getStaticPaths() {
   }
 
   .page-link {
+    min-width: 14px;
+    max-height: 30px;
+    line-height: 30px;
     padding: 10px 18px;
     border-radius: 12px;
     border: 1px solid color-mix(in srgb, var(--text) 12%, transparent);
@@ -225,6 +228,7 @@ export async function getStaticPaths() {
     color: var(--text);
     background: var(--panel);
     box-shadow: 0 10px 24px var(--shadow);
+    text-align: center;
   }
 
   .page-link.active {
