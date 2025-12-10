@@ -6,6 +6,13 @@
 }
 
 @font-face {
+  font-family: "Suit";
+  src: url("/github-pages/fonts/SUIT-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-display: swap;
+}
+
+@font-face {
   font-family: "Fira Code";
   src: url("/github-pages/fonts/FiraCode-Regular.woff2") format("woff2");
   font-weight: 400;
