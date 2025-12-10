@@ -23,6 +23,9 @@ const tags = post.frontmatter.tags || [];
 <Layout>
   <article class="post">
     <a class="back" href={`${baseUrl}/posts`}>
+      <svg class="back-icon" viewBox="0 0 20 20" aria-hidden="true" focusable="false">
+        <path d="M11.5 4.5 6 10l5.5 5.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
       Posts로 돌아가기
     </a>
     <p class="eyebrow">{new Date(pubDate).toLocaleDateString('ko-KR')}</p>
@@ -48,7 +51,9 @@ const tags = post.frontmatter.tags || [];
   }
 
   .back {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
     margin-bottom: 16px;
     color: var(--muted);
     text-decoration: none;
@@ -56,6 +61,11 @@ const tags = post.frontmatter.tags || [];
 
   .back:hover {
     text-decoration: underline;
+  }
+
+  .back-icon {
+    width: 18px;
+    height: 18px;
   }
 
   .eyebrow {

@@ -1,27 +1,16 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import type { Post } from "../types";
+import { getAllPosts, getPaginationMeta } from "../lib/posts";
 
 const baseUrl = import.meta.env.BASE_URL?.replace(/\/$/, "") || "";
-const postEntries: Post[] = Object.values(import.meta.glob("../post/*.md", { eager: true }));
-
-const posts = postEntries
-  .filter((post) => Boolean(post.frontmatter.slug))
-  .map((post) => ({
-    title: post.frontmatter.title,
-    summary: post.frontmatter.summary || "", 
-    date: new Date(post.frontmatter.pubDate),
-    slug: post.frontmatter.slug,
-    tags: post.frontmatter.tags || [],
-  }))
-  .sort((a, b) => Number(b.date) - Number(a.date));
+const posts = getAllPosts();
 
 const pageSize = 10;
-const requestedPage = Number.parseInt(Astro.url.searchParams.get("page") || "1", 10) || 1;
-const totalPages = Math.max(1, Math.ceil(posts.length / pageSize));
-const currentPage = Math.min(Math.max(requestedPage, 1), totalPages);
-const start = (currentPage - 1) * pageSize;
-const visiblePosts = posts.slice(start, start + pageSize);
+const { totalPages } = getPaginationMeta(posts.length, pageSize);
+const serializedPosts = posts.map((post) => ({
+  ...post,
+  date: post.date.toISOString(),
+}));
 ---
 <Layout>
   <section class="post-section">
@@ -37,10 +26,10 @@ const visiblePosts = posts.slice(start, start + pageSize);
     </div>
 
     <div class="post-column-1">
-      {visiblePosts.length === 0 ? (
+      {posts.length === 0 ? (
         <p class="empty">등록된 글이 아직 없어요.</p>
       ) : (
-        visiblePosts.map((post) => (
+        posts.slice(0, pageSize).map((post) => (
           <a class="post-row" href={`${baseUrl}/${post.slug}`}>
             <div class="row-meta">
               <p class="date">{post.date.toLocaleDateString("ko-KR")}</p>
@@ -61,15 +50,119 @@ const visiblePosts = posts.slice(start, start + pageSize);
   <div class="pagination">
     {Array.from({ length: totalPages }).map((_, index) => {
       const page = index + 1;
-      const isActive = page === currentPage;
+      const isActive = page === 1;
       const href = `${baseUrl}/posts${page === 1 ? "" : `?page=${page}`}`;
       return (
-        <a class={`page-link ${isActive ? "active" : ""}`} href={href}>
+        <a class={`page-link ${isActive ? "active" : ""}`} href={href} data-page={page}>
           {page}
         </a>
       );
     })}
   </div>
+
+  <script id="post-data" type="application/json">
+    {JSON.stringify(serializedPosts).replace(/</g, "\\u003c")}
+  </script>
+
+  <script is:inline>
+    const baseUrl = "{baseUrl}";
+    const posts = JSON.parse(document.getElementById("post-data").textContent || "[]");
+    const pageSize = {pageSize};
+    const totalPages = Math.max(1, Math.ceil(posts.length / pageSize));
+
+    const postContainer = document.querySelector(".post-column-1");
+    const paginationLinks = Array.from(document.querySelectorAll(".pagination .page-link"));
+
+    function clampPage(page) {
+      return Math.min(Math.max(page, 1), totalPages);
+    }
+
+    function getPageFromSearch() {
+      const searchParams = new URLSearchParams(window.location.search);
+      const pageValue = Number.parseInt(searchParams.get("page") || "1", 10);
+      return clampPage(Number.isFinite(pageValue) ? pageValue : 1);
+    }
+
+    function renderPosts(page) {
+      if (!postContainer) return;
+      const currentPage = clampPage(page);
+      const start = (currentPage - 1) * pageSize;
+      const visiblePosts = posts.slice(start, start + pageSize);
+
+      if (visiblePosts.length === 0) {
+        postContainer.innerHTML = '<p class="empty">등록된 글이 아직 없어요.</p>';
+        return;
+      }
+
+      const items = visiblePosts
+        .map((post) => {
+          const dateLabel = new Date(post.date).toLocaleDateString("ko-KR");
+          const tags = Array.isArray(post.tags) ? post.tags : [];
+          return `
+            <a class="post-row" href="${baseUrl}/${post.slug}">
+              <div class="row-meta">
+                <p class="date">${dateLabel}</p>
+                <h3>${post.title}</h3>
+                <p class="summary">${post.summary}</p>
+                <div class="tags">
+                  ${tags.map((tag) => `<span class="tag">#${tag}</span>`).join("")}
+                </div>
+              </div>
+            </a>
+          `;
+        })
+        .join("");
+
+      postContainer.innerHTML = items;
+    }
+
+    function updatePagination(page) {
+      const currentPage = clampPage(page);
+      paginationLinks.forEach((link) => {
+        const pageValue = Number.parseInt(link.dataset.page || "1", 10) || 1;
+        link.href = `${baseUrl}/posts${pageValue === 1 ? "" : `?page=${pageValue}`}`;
+        if (pageValue === currentPage) {
+          link.classList.add("active");
+        } else {
+          link.classList.remove("active");
+        }
+      });
+    }
+
+    function setPage(page, pushState = false) {
+      const currentPage = clampPage(page);
+      const nextParams = new URLSearchParams(window.location.search);
+      if (currentPage === 1) {
+        nextParams.delete("page");
+      } else {
+        nextParams.set("page", String(currentPage));
+      }
+      const newSearch = nextParams.toString();
+      const newUrl = `${window.location.pathname}${newSearch ? `?${newSearch}` : ""}`;
+      if (pushState) {
+        window.history.pushState({}, "", newUrl);
+      } else {
+        window.history.replaceState({}, "", newUrl);
+      }
+      renderPosts(currentPage);
+      updatePagination(currentPage);
+    }
+
+    paginationLinks.forEach((link) => {
+      link.addEventListener("click", (event) => {
+        const pageValue = Number.parseInt(link.dataset.page || "1", 10) || 1;
+        if (pageValue <= 0) return;
+        event.preventDefault();
+        setPage(pageValue, true);
+      });
+    });
+
+    window.addEventListener("popstate", () => {
+      setPage(getPageFromSearch(), false);
+    });
+
+    setPage(getPageFromSearch());
+  </script>
 </Layout>
 
 <style>
@@ -230,7 +323,7 @@ const visiblePosts = posts.slice(start, start + pageSize);
 
   .page-link.active {
     background: var(--accent);
-    color: #1f1028;
+    color: #ffffff;
     font-weight: 800;
   }
 
