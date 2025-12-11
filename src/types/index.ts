@@ -7,6 +7,7 @@ interface PostFrontmatter {
   tags: string[];
   summary: string;
   category?: string;
+  series?: string;
   description?: string;
   thumbnail?: string;
 }

@@ -2,6 +2,9 @@ blockquote {
   margin: 0;
   padding-left: 15px;
   border-left: 2px solid var(--accent);
+  background: color-mix(in srgb, var(--accent) 10%, var(--panel));
+  border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
 }
 
 blockquote p {
