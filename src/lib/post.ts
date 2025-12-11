@@ -8,6 +8,8 @@ export type PostSummary = {
   slug: string;
   image?: string;
   tags: string[];
+  category?: string;
+  series?: string;
 };
 
 // Ensures a time component exists so sorting can consider hh:mm:ss.
@@ -32,9 +34,43 @@ export const getAllPosts = (): PostSummary[] => {
       date: parsePubDate(post.frontmatter.pubDate),
       slug: post.frontmatter.slug,
       image: post.frontmatter.thumbnail,
+      category: post.frontmatter.category,
+      series: post.frontmatter.series,
       tags: post.frontmatter.tags || [],
     }))
     .sort((a, b) => Number(b.date) - Number(a.date));
+};
+
+const slugifySeries = (name: string): string =>
+  encodeURIComponent(name.trim().toLowerCase().replace(/\s+/g, "-"));
+
+export type SeriesGroup = {
+  name: string;
+  slug: string;
+  posts: PostSummary[];
+};
+
+export const getSeriesGroups = (): SeriesGroup[] => {
+  const posts = getAllPosts();
+  const map = new Map<string, SeriesGroup>();
+
+  posts.forEach((post) => {
+    if (!post.series) return;
+    const name = post.series.trim();
+    if (!name) return;
+    const slug = slugifySeries(name);
+    const existing = map.get(slug);
+    if (existing) {
+      existing.posts.push(post);
+    } else {
+      map.set(slug, { name, slug, posts: [post] });
+    }
+  });
+
+  return Array.from(map.values()).map((group) => ({
+    ...group,
+    posts: group.posts.sort((a, b) => Number(b.date) - Number(a.date)),
+  }));
 };
 
 export const getPaginationMeta = (
