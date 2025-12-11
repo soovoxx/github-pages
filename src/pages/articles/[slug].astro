@@ -1,5 +1,4 @@
 ---
-import Back from '../../components/section/Back.astro';
 import { baseUrl } from '../../constants';
 import Layout from '../../layouts/Layout.astro';
 import { getAdjacentPosts } from '../../lib';
@@ -27,7 +26,6 @@ const parsedPubDate = parsePubDate(pubDate);
 
 <Layout>
   <article class="post">
-    <Back link={`${baseUrl}/posts/1`} text="Posts로 돌아가기" />
     <p class="eyebrow">{parsedPubDate.toLocaleDateString('ko-KR')}</p>
     <h1>{title}</h1>
     <div class="tags">
