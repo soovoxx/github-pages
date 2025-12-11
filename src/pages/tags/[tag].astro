@@ -1,27 +1,22 @@
 ---
 import Layout from "../../layouts/Layout.astro";
-import { getAllPosts, getPaginationMeta } from '../../lib/post'
-import { POSTS_PER_PAGE } from '../../constants'
+import { getAllPosts } from "../../lib/post";
 
 // GitHub Pages용 baseUrl (예: /github-pages)
 const baseUrl = import.meta.env.BASE_URL?.replace(/\/$/, "") || "";
 
-const posts = getAllPosts();
+const rawTag = Astro.params.tag ?? "";
+const currentTag = decodeURIComponent(rawTag);
 
-const { totalPages } = getPaginationMeta(posts.length, POSTS_PER_PAGE);
-
-const rawPage = Astro.params.page;
-const requestedPage = Number.parseInt(rawPage ?? "1", 10) || 1;
-const currentPage = Math.min(Math.max(requestedPage, 1), totalPages);
-
-const start = (currentPage - 1) * POSTS_PER_PAGE;
-const visiblePosts = posts.slice(start, start + POSTS_PER_PAGE);
+const posts = getAllPosts().filter((post) => post.tags.includes(currentTag));
 
 export async function getStaticPaths() {
-  const totalPages = getPaginationMeta(getAllPosts().length, POSTS_PER_PAGE).totalPages;
+  const tags = Array.from(
+    new Set(getAllPosts().flatMap((post) => post.tags || []))
+  );
 
-  return Array.from({ length: totalPages }).map((_, i) => ({
-    params: { page: String(i + 1) },
+  return tags.map((tag) => ({
+    params: { tag },
   }));
 }
 ---
@@ -30,20 +25,20 @@ export async function getStaticPaths() {
   <section class="post-section">
     <div class="page-header">
       <div>
-        <p class="eyebrow">All Posts</p>
-        <h1>기록을 모아 둔 우주 정거장</h1>
+        <p class="eyebrow">Tag</p>
+        <h1>#{currentTag}</h1>
       </div>
       <div class="counter">
         <p class="count">{posts.length}</p>
-        <p class="label">전체 게시글</p>
+        <p class="label">해당 태그 게시글</p>
       </div>
     </div>
 
     <div class="post-column-1">
-      {visiblePosts.length === 0 ? (
+      {posts.length === 0 ? (
         <p class="empty">등록된 글이 아직 없어요.</p>
       ) : (
-        visiblePosts.map((post) => (
+        posts.map((post) => (
           <a class="post-row" href={`${baseUrl}/${post.slug}`}>
             <div class="row-meta">
               <p class="date">{post.date.toLocaleDateString("ko-KR")}</p>
@@ -60,19 +55,6 @@ export async function getStaticPaths() {
       )}
     </div>
   </section>
-
-  <div class="pagination">
-    {Array.from({ length: totalPages }).map((_, index) => {
-      const page = index + 1;
-      const isActive = page === currentPage;
-      const href = `${baseUrl}/posts/${page}`;
-      return (
-        <a class={`page-link ${isActive ? "active" : ""}`} href={href}>
-          {page}
-        </a>
-      );
-    })}
-  </div>
 </Layout>
 
 <style>
@@ -188,6 +170,7 @@ export async function getStaticPaths() {
     color: var(--text);
     font-size: 0.9rem;
     letter-spacing: 0.02em;
+    text-decoration: none;
   }
 
   .post-column-1 {
@@ -207,34 +190,6 @@ export async function getStaticPaths() {
     color: var(--text);
     box-shadow: 0 14px 28px var(--shadow);
     transition: transform 0.16s ease, box-shadow 0.2s ease;
-  }
-
-  .pagination {
-    margin: 22px 0 0;
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-
-  .page-link {
-    min-width: 22px;
-    max-height: 22px;
-    line-height: 22px;
-    padding: 10px;
-    border-radius: 12px;
-    border: 1px solid color-mix(in srgb, var(--text) 12%, transparent);
-    text-decoration: none;
-    color: var(--text);
-    background: var(--panel);
-    box-shadow: 0 10px 24px var(--shadow);
-    text-align: center;
-  }
-
-  .page-link.active {
-    background: var(--accent);
-    color: #ffffff;
-    font-weight: 700;
   }
 
   @media (max-width: 720px) {
