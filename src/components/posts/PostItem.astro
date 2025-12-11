@@ -1,0 +1,78 @@
+---
+import { baseUrl } from '../../constants';
+import type { PostSummary } from '../../lib'
+
+interface Props{
+    post: PostSummary;
+}
+
+const { post } = Astro.props;
+---
+
+<a class="post-row" href={`${baseUrl}/articles/${post.slug}`}>
+  <div class="row-meta">
+    <p class="date">{post.date.toLocaleDateString("ko-KR")}</p>
+    <h3>{post.title}</h3>
+    <p class="summary">{post.summary}</p>
+    <div class="tags">
+      {post.tags.map((tag) => (
+          <span class="tag">#{tag}</span>
+      ))}
+    </div>
+  </div>
+</a>
+
+<style>
+  .post-row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+    padding: 16px;
+    border-radius: 16px;
+    background: var(--panel);
+    border: 1px solid color-mix(in srgb, var(--text) 8%, transparent);
+    text-decoration: none;
+    color: var(--text);
+    box-shadow: 0 14px 28px var(--shadow);
+    transition: transform 0.16s ease, box-shadow 0.2s ease;
+  }
+
+  .post-row:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 16px 34px var(--shadow);
+  }
+
+  .row-meta h3 {
+    margin: 6px 0 6px;
+  }
+
+  .date {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.95rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+
+  .summary {
+    margin: 0;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 8px;
+  }
+
+  .tag {
+    padding: 4px 8px;
+    border-radius: 10px;
+    background: color-mix(in srgb, var(--text) 6%, transparent);
+    color: var(--text);
+    font-size: 0.9rem;
+    letter-spacing: 0.02em;
+  }
+</style>

@@ -1,13 +1,12 @@
 ---
-import Back from '../components/section/Back.astro';
-import Layout from '../layouts/Layout.astro';
-import { getAdjacentPosts } from '../lib';
-import type { Post } from '../types';
-
-const baseUrl = import.meta.env.BASE_URL?.replace(/\/$/, '') || '';
+import Back from '../../components/section/Back.astro';
+import { baseUrl } from '../../constants';
+import Layout from '../../layouts/Layout.astro';
+import { getAdjacentPosts } from '../../lib';
+import type { Post } from '../../types';
 
 export async function getStaticPaths() {
-  const posts: Post[] = Object.values(import.meta.glob('../content/posts/*.md', { eager: true }));
+  const posts: Post[] = Object.values(import.meta.glob('../../content/posts/*.md', { eager: true }));
 
   return posts
     .filter((post) => Boolean(post.frontmatter.slug))
@@ -40,7 +39,7 @@ const {prevPost, nextPost} = getAdjacentPosts(post.frontmatter.slug)
     {(prevPost || nextPost) && (
       <nav class="post-nav" aria-label="Post navigation">
         {prevPost ? (
-          <a class="nav-link" href={`${baseUrl}/${prevPost.slug}`}>
+          <a class="nav-link" href={`${baseUrl}/articles/${prevPost.slug}`}>
             <span class="nav-label">이전 글</span>
             <span class="nav-title">{prevPost.title}</span>
           </a>
@@ -48,7 +47,7 @@ const {prevPost, nextPost} = getAdjacentPosts(post.frontmatter.slug)
           <span></span>
         )}
         {nextPost ? (
-          <a class="nav-link" href={`${baseUrl}/${nextPost.slug}`}>
+          <a class="nav-link" href={`${baseUrl}/articles/${nextPost.slug}`}>
             <span class="nav-label">다음 글</span>
             <span class="nav-title">{nextPost.title}</span>
           </a>
