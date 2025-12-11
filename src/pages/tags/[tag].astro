@@ -8,6 +8,8 @@ const baseUrl = import.meta.env.BASE_URL?.replace(/\/$/, "") || "";
 const rawTag = Astro.params.tag ?? "";
 const currentTag = decodeURIComponent(rawTag);
 
+const tagsPageTitle = currentTag.charAt(0).toUpperCase() + currentTag.slice(1);
+
 const posts = getAllPosts().filter((post) => post.tags.includes(currentTag));
 
 export async function getStaticPaths() {
@@ -26,7 +28,7 @@ export async function getStaticPaths() {
     <div class="page-header">
       <div>
         <p class="eyebrow">Tag</p>
-        <h1>#{currentTag}</h1>
+        <h1>#{tagsPageTitle}</h1>
       </div>
       <div class="counter">
         <p class="count">{posts.length}</p>
