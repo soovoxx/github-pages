@@ -1,7 +1,7 @@
 ---
+import { baseUrl } from "../constants";
 import Layout from "../layouts/Layout.astro";
 
-const baseUrl = import.meta.env.BASE_URL?.replace(/\/$/, "") || "";
 const posts = `${baseUrl}/posts/1`
 ---
 <Layout>
