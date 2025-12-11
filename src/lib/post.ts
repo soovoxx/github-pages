@@ -10,6 +10,15 @@ export type PostSummary = {
   tags: string[];
 };
 
+// Ensures a time component exists so sorting can consider hh:mm:ss.
+export const parsePubDate = (raw: string): Date => {
+  const trimmed = raw.trim();
+  const hasTime = /\d{2}:\d{2}(:\d{2})?/.test(trimmed);
+  const withTime = hasTime ? trimmed : `${trimmed} 00:00:00`;
+  const isoReady = withTime.includes("T") ? withTime : withTime.replace(" ", "T");
+  return new Date(isoReady);
+};
+
 export const getAllPosts = (): PostSummary[] => {
   const postEntries: Post[] = Object.values(
     import.meta.glob("../content/posts/*.md", { eager: true })
@@ -20,8 +29,9 @@ export const getAllPosts = (): PostSummary[] => {
     .map((post) => ({
       title: post.frontmatter.title,
       summary: post.frontmatter.summary || "",
-      date: new Date(post.frontmatter.pubDate),
+      date: parsePubDate(post.frontmatter.pubDate),
       slug: post.frontmatter.slug,
+      image: post.frontmatter.thumbnail,
       tags: post.frontmatter.tags || [],
     }))
     .sort((a, b) => Number(b.date) - Number(a.date));
