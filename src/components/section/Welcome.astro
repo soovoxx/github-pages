@@ -51,13 +51,7 @@ const aboutUrl = `${baseUrl}/about`;
       <p class="empty">등록된 글이 아직 없어요.</p>
     ) : (
       limitedPosts.map((post) => (
-        <a class="post-card" href={`${baseUrl}/${post.slug}`}>
-          <div class="post-visual" style={`background-image: url(${post.image ?? defaultImagePath});`}></div>
-          <div class="post-meta">
-            <p class="post-title">{post.title}</p>
-            <p class="post-summary">{post.summary}</p>
-          </div>
-        </a>
+        <PostCard post={post} />
       ))
     )}
   </div>

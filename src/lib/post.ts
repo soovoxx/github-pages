@@ -6,6 +6,7 @@ export type PostSummary = {
   summary: string;
   date: Date;
   slug: string;
+  image?: string;
   tags: string[];
 };
 

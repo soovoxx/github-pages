@@ -4,8 +4,8 @@ interface PostFrontmatter {
   title: string;
   slug: string;
   pubDate: string;
-  tags?: string[];
-  summary?: string;
+  tags: string[];
+  summary: string;
   category?: string;
   description?: string;
   thumbnail?: string;

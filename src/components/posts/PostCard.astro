@@ -1,0 +1,65 @@
+---
+import { baseUrl } from '../../constants';
+import type { PostSummary } from '../../lib';
+
+interface Props {
+  post: PostSummary
+}
+
+const { post: {slug, image, title, summary} } = Astro.props
+const targetUrl = `${baseUrl}/articles/${slug}`
+
+const defaultImagePath = `${baseUrl}/article-default-image.png`;
+const resolvedImage =
+  image && !image.startsWith('http')
+    ? `${baseUrl}/${image.replace(/^\//, '')}`
+    : image ?? defaultImagePath;
+---
+
+<a class="post-card" href={targetUrl}>
+  <div class="post-visual" style={`background-image: url(${resolvedImage});`}></div>
+  <div class="post-meta">
+    <p class="post-title">{title}</p>
+    <p class="post-summary">{summary}</p>
+  </div>
+</a>
+
+<style>
+    .post-card {
+    display: grid;
+    gap: 12px;
+    padding: 14px;
+    border-radius: 20px;
+    background: var(--panel);
+    text-decoration: none;
+    color: var(--text);
+    border: 1px solid color-mix(in srgb, var(--text) 8%, transparent);
+    box-shadow: 0 12px 28px var(--shadow);
+    transition: transform 0.15s ease, box-shadow 0.2s ease;
+  }
+
+  .post-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 16px 32px var(--shadow);
+  }
+
+  .post-visual {
+    width: 100%;
+    height: 200px;
+    background-size: cover;
+    background-position: center;
+    border-radius: 12px;
+  }
+
+  .post-title {
+    margin: 0;
+    font-weight: 700;
+    font-size: 1.05rem;
+  }
+
+  .post-excerpt {
+    margin: 0;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+</style>
