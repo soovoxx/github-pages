@@ -1,13 +1,15 @@
 ---
-import { baseUrl } from '../../constants';
-import Layout from '../../layouts/Layout.astro';
-import '../../styles/markdown.css'
-import { getAdjacentPosts } from '../../lib';
-import { parsePubDate } from '../../lib/post';
-import type { Post } from '../../types';
+import { baseUrl } from "../../constants";
+import Layout from "../../layouts/Layout.astro";
+import "../../styles/markdown.scss";
+import { getAdjacentPosts } from "../../lib";
+import { parsePubDate } from "../../lib/post";
+import type { Post } from "../../types";
 
 export async function getStaticPaths() {
-  const posts: Post[] = Object.values(import.meta.glob('../../content/posts/*.md', { eager: true }));
+  const posts: Post[] = Object.values(
+    import.meta.glob("../../content/posts/*.md", { eager: true }),
+  );
 
   return posts
     .filter((post) => Boolean(post.frontmatter.slug))
@@ -18,77 +20,88 @@ export async function getStaticPaths() {
 }
 
 const { post } = Astro.props;
-const { Content, frontmatter: { pubDate, title, summary } } = post;
+const {
+  Content,
+  frontmatter: { pubDate, title, summary },
+} = post;
 const tags = post.frontmatter.tags || [];
 const headings = post.getHeadings();
 console.log(post.getHeadings());
-const tocHeadings = headings.filter(({ depth }) => depth >= 2 && depth <= 4);
-const getTocPadding = (depth: number) => 8 + Math.max(0, depth - 2) * 12;
+const tocHeadings = headings.filter(({ depth }) => depth >= 1 && depth <= 4);
+const getTocPadding = (depth: number) => 6 + Math.max(0, depth - 1) * 10;
 
-const {prevPost, nextPost} = getAdjacentPosts(post.frontmatter.slug)
+const { prevPost, nextPost } = getAdjacentPosts(post.frontmatter.slug);
 const parsedPubDate = parsePubDate(pubDate);
 ---
 
 <Layout>
   <div class="post-layout">
     <article class="post">
-      <p class="eyebrow">{parsedPubDate.toLocaleDateString('ko-KR')}</p>
+      <p class="eyebrow">{parsedPubDate.toLocaleDateString("ko-KR")}</p>
       <h1 class="title">{title}</h1>
       <div class="tags">
-        {tags.map((t) => (
-          <a class="tag" href={`${baseUrl}/tags/${encodeURIComponent(t)}`}>#{t}</a>
-        ))}
+        {
+          tags.map((t) => (
+            <a class="tag" href={`${baseUrl}/tags/${encodeURIComponent(t)}`}>
+              #{t}
+            </a>
+          ))
+        }
       </div>
       <div class="content">
         <Content />
       </div>
-      {(prevPost || nextPost) && (
-        <nav class="post-nav" aria-label="Post navigation">
-          {prevPost ? (
-            <a class="nav-link" href={`${baseUrl}/articles/${prevPost.slug}`}>
-              <span class="nav-label">이전 글</span>
-              <span class="nav-title">{prevPost.title}</span>
-            </a>
-          ) : (
-            <span></span>
-          )}
-          {nextPost ? (
-            <a class="nav-link" href={`${baseUrl}/articles/${nextPost.slug}`}>
-              <span class="nav-label">다음 글</span>
-              <span class="nav-title">{nextPost.title}</span>
-            </a>
-          ) : (
-            <span></span>
-          )}
-        </nav>
-      )}
+      {
+        (prevPost || nextPost) && (
+          <nav class="post-nav" aria-label="Post navigation">
+            {prevPost ? (
+              <a class="nav-link" href={`${baseUrl}/articles/${prevPost.slug}`}>
+                <span class="nav-label">이전 글</span>
+                <span class="nav-title">{prevPost.title}</span>
+              </a>
+            ) : (
+              <span />
+            )}
+            {nextPost ? (
+              <a class="nav-link" href={`${baseUrl}/articles/${nextPost.slug}`}>
+                <span class="nav-label">다음 글</span>
+                <span class="nav-title">{nextPost.title}</span>
+              </a>
+            ) : (
+              <span />
+            )}
+          </nav>
+        )
+      }
     </article>
 
-    {tocHeadings.length > 0 && (
-      <aside class="toc" aria-label="On this page">
-        <ul class="toc-list">
-          {tocHeadings.map((heading) => (
-            <li class="toc-item">
-              <a
-                class="toc-link"
-                style={`padding-left: ${getTocPadding(heading.depth)}px`}
-                href={`#${heading.slug}`}
-              >
-                {heading.text}
-              </a>
-            </li>
-          ))}
-        </ul>
-      </aside>
-    )}
+    {
+      tocHeadings.length > 0 && (
+        <aside class="toc" aria-label="On this page">
+          <ul class="toc-list">
+            {tocHeadings.map((heading) => (
+              <li class="toc-item">
+                <a
+                  class="toc-link"
+                  style={`padding-left: ${getTocPadding(heading.depth)}px`}
+                  href={`#${heading.slug}`}
+                >
+                  {heading.text}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </aside>
+      )
+    }
   </div>
 </Layout>
 
 <script is:inline>
-  const tocLinks = Array.from(document.querySelectorAll('.toc a'));
-  const headings = Array.from(document.querySelectorAll('.content :is(h2, h3, h4)')).filter(
-    (heading) => heading.id,
-  );
+  const tocLinks = Array.from(document.querySelectorAll(".toc a"));
+  const headings = Array.from(
+    document.querySelectorAll(".content :is(h1, h2, h3, h4)"),
+  ).filter((heading) => heading.id);
 
   if (tocLinks.length && headings.length) {
     const linkTargets = tocLinks.map((link) => ({
@@ -98,28 +111,29 @@ const parsedPubDate = parsePubDate(pubDate);
 
     const scrollOffset = 80;
 
-    let lastActiveId = '';
+    let lastActiveId = "";
 
     const setActive = (id) => {
       if (id === lastActiveId) return;
       lastActiveId = id;
       linkTargets.forEach(({ link, id: targetId }) => {
         const isActive = targetId === id;
-        link.classList.toggle('active', isActive);
+        link.classList.toggle("active", isActive);
         if (isActive) {
-          link.setAttribute('aria-current', 'true');
+          link.setAttribute("aria-current", "true");
         } else {
-          link.removeAttribute('aria-current');
+          link.removeAttribute("aria-current");
         }
       });
     };
 
-    const getOffsetTop = (el) => el.getBoundingClientRect().top + window.scrollY;
+    const getOffsetTop = (el) =>
+      el.getBoundingClientRect().top + window.scrollY;
     const scrollToHeading = (id) => {
       const target = document.getElementById(id);
       if (!target) return;
       const targetTop = Math.max(0, getOffsetTop(target) - scrollOffset);
-      window.scrollTo({ top: targetTop, behavior: 'smooth' });
+      window.scrollTo({ top: targetTop, behavior: "smooth" });
     };
 
     const updateActive = () => {
@@ -139,7 +153,7 @@ const parsedPubDate = parsePubDate(pubDate);
 
     let ticking = false;
     window.addEventListener(
-      'scroll',
+      "scroll",
       () => {
         if (!ticking) {
           window.requestAnimationFrame(() => {
@@ -152,20 +166,49 @@ const parsedPubDate = parsePubDate(pubDate);
       { passive: true },
     );
 
-    window.addEventListener('resize', updateActive);
+    window.addEventListener("resize", updateActive);
     updateActive();
 
-    const hash = decodeURIComponent(window.location.hash.replace('#', ''));
+    const hash = decodeURIComponent(window.location.hash.replace("#", ""));
     if (hash) setActive(hash);
 
     linkTargets.forEach(({ link, id }) => {
-      link.addEventListener('click', (event) => {
+      link.addEventListener("click", (event) => {
         event.preventDefault();
         scrollToHeading(id);
         setActive(id);
-        history.replaceState(null, '', window.location.pathname + window.location.search);
+        history.replaceState(
+          null,
+          "",
+          window.location.pathname + window.location.search,
+        );
       });
     });
+
+    // 'post-nav'가 화면에 보이면 TOC를 약하게 표시
+    const postNav = document.querySelector(".post-nav");
+    const tocAside = document.querySelector(".toc");
+
+    if (postNav && tocAside) {
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              tocAside.classList.add("bottom-near");
+            } else {
+              tocAside.classList.remove("bottom-near");
+            }
+          });
+        },
+        {
+          root: null,
+          rootMargin: "0px",
+          threshold: 0,
+        },
+      );
+
+      observer.observe(postNav);
+    }
   }
 </script>
 
@@ -175,7 +218,6 @@ const parsedPubDate = parsePubDate(pubDate);
   }
 
   .post-layout {
-
     .post {
       width: 100%;
       max-width: 900px;
@@ -231,7 +273,9 @@ const parsedPubDate = parsePubDate(pubDate);
           color: var(--text);
           text-decoration: none;
           box-shadow: 0 10px 24px var(--shadow);
-          transition: transform 0.15s ease, box-shadow 0.2s ease;
+          transition:
+            transform 0.15s ease,
+            box-shadow 0.2s ease;
 
           &:hover {
             transform: translateY(-2px);
@@ -271,48 +315,62 @@ const parsedPubDate = parsePubDate(pubDate);
         letter-spacing: 0.02em;
       }
 
-        .toc-list {
-          list-style: none;
-          padding: 0;
-          margin: 0;
-          display: grid;
-          grid-template-columns: 1fr;
+      .toc-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: grid;
+        grid-template-columns: 1fr;
 
-          .toc-item {
-            line-height: 1.2;
-            min-width: 0;
-          }
-        }
-
-        .toc-link {
-          display: block;
-          padding: 3px;
-          width: 100%;
-          max-width: 100%;
-          box-sizing: border-box;
+        .toc-item {
+          line-height: 1.2;
           min-width: 0;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          white-space: nowrap;
-          border-radius: 10px;
-          color: var(--muted);
-          text-decoration: none;
-          border: 1px solid transparent;
-          transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
-
-          &:hover {
-            color: var(--text);
-            border-color: color-mix(in srgb, var(--accent) 45%, transparent);
-            background: color-mix(in srgb, var(--panel) 98%, transparent);
-          }
-
-          &.active {
-            color: var(--text);
-            border-color: color-mix(in srgb, var(--accent) 60%, transparent);
-            background: color-mix(in srgb, var(--accent) 12%, var(--panel));
-            font-weight: 700;
-          }
         }
+      }
+
+      .toc-link {
+        display: block;
+        padding: 3px;
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        border-radius: 10px;
+        color: var(--muted);
+        text-decoration: none;
+        border: 1px solid transparent;
+        transition:
+          background 0.15s ease,
+          color 0.15s ease,
+          border-color 0.15s ease;
+
+        &:hover {
+          color: var(--text);
+          border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+          background: color-mix(in srgb, var(--panel) 98%, transparent);
+        }
+
+        &.active {
+          color: var(--text);
+          border-color: color-mix(in srgb, var(--accent) 60%, transparent);
+          background: color-mix(in srgb, var(--accent) 12%, var(--panel));
+          font-weight: 700;
+        }
+      }
+
+      &.bottom-near {
+        opacity: 0.6; // 하단에서 TOC 전체를 약하게
+      }
+
+      &.bottom-near .toc-link.active {
+        font-weight: normal;
+        color: var(--muted);
+        border-color: transparent;
+        background: none;
+      }
     }
   }
 
