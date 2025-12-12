@@ -20,20 +20,22 @@ const seriesList = getSeriesGroups();
       </div>
     </div>
 
-    {seriesList.length === 0 ? (
-      <p class="empty">시리즈로 묶인 글이 아직 없어요.</p>
-    ) : (
-      <div class="series-grid">
-        {seriesList.map((series) => (
-          <a class="series-card" href={`${baseUrl}/series/${series.slug}`}>
-            <div>
-              <p class="series-name">{series.name}</p>
-              <p class="series-count">{series.posts.length}개의 글</p>
-            </div>
-          </a>
-        ))}
-      </div>
-    )}
+    {
+      seriesList.length === 0 ? (
+        <p class="empty">시리즈로 묶인 글이 아직 없어요.</p>
+      ) : (
+        <div class="series-grid">
+          {seriesList.map((series) => (
+            <a class="series-card" href={`${baseUrl}/series/${series.slug}`}>
+              <div>
+                <p class="series-name">{series.name}</p>
+                <p class="series-count">{series.posts.length}개의 글</p>
+              </div>
+            </a>
+          ))}
+        </div>
+      )
+    }
   </section>
 </Layout>
 
@@ -105,7 +107,9 @@ const seriesList = getSeriesGroups();
     color: var(--text);
     border: 1px solid color-mix(in srgb, var(--text) 8%, transparent);
     box-shadow: 0 12px 28px var(--shadow);
-    transition: transform 0.15s ease, box-shadow 0.2s ease;
+    transition:
+      transform 0.15s ease,
+      box-shadow 0.2s ease;
   }
 
   .series-card:hover {

@@ -1,7 +1,7 @@
 ---
 import Layout from "../../layouts/Layout.astro";
-import { getAllPosts, getPaginationMeta } from '../../lib/post'
-import { baseUrl, POSTS_PER_PAGE } from '../../constants'
+import { getAllPosts, getPaginationMeta } from "../../lib/post";
+import { baseUrl, POSTS_PER_PAGE } from "../../constants";
 import PostItem from "../../components/posts/PostItem.astro";
 
 // GitHub Pages용 baseUrl (예: /github-pages)
@@ -17,7 +17,10 @@ const start = (currentPage - 1) * POSTS_PER_PAGE;
 const visiblePosts = posts.slice(start, start + POSTS_PER_PAGE);
 
 export async function getStaticPaths() {
-  const totalPages = getPaginationMeta(getAllPosts().length, POSTS_PER_PAGE).totalPages;
+  const totalPages = getPaginationMeta(
+    getAllPosts().length,
+    POSTS_PER_PAGE,
+  ).totalPages;
 
   return Array.from({ length: totalPages }).map((_, i) => ({
     params: { page: String(i + 1) },
@@ -39,27 +42,29 @@ export async function getStaticPaths() {
     </div>
 
     <div class="post-column-1">
-      {visiblePosts.length === 0 ? (
-        <p class="empty">등록된 글이 아직 없어요.</p>
-      ) : (
-        visiblePosts.map((post) => (
-          <PostItem post={post} />
-        ))
-      )}
+      {
+        visiblePosts.length === 0 ? (
+          <p class="empty">등록된 글이 아직 없어요.</p>
+        ) : (
+          visiblePosts.map((post) => <PostItem post={post} />)
+        )
+      }
     </div>
   </section>
 
   <div class="pagination">
-    {Array.from({ length: totalPages }).map((_, index) => {
-      const page = index + 1;
-      const isActive = page === currentPage;
-      const href = `${baseUrl}/posts/${page}`;
-      return (
-        <a class={`page-link ${isActive ? "active" : ""}`} href={href}>
-          {page}
-        </a>
-      );
-    })}
+    {
+      Array.from({ length: totalPages }).map((_, index) => {
+        const page = index + 1;
+        const isActive = page === currentPage;
+        const href = `${baseUrl}/posts/${page}`;
+        return (
+          <a class={`page-link ${isActive ? "active" : ""}`} href={href}>
+            {page}
+          </a>
+        );
+      })
+    }
   </div>
 </Layout>
 

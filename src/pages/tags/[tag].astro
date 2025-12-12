@@ -12,7 +12,7 @@ const posts = getAllPosts().filter((post) => post.tags.includes(currentTag));
 
 export async function getStaticPaths() {
   const tags = Array.from(
-    new Set(getAllPosts().flatMap((post) => post.tags || []))
+    new Set(getAllPosts().flatMap((post) => post.tags || [])),
   );
 
   return tags.map((tag) => ({
@@ -35,13 +35,13 @@ export async function getStaticPaths() {
     </div>
 
     <div class="post-column-1">
-      {posts.length === 0 ? (
-        <p class="empty">등록된 글이 아직 없어요.</p>
-      ) : (
-        posts.map((post) => (
-          <PostItem post={post} />
-        ))
-      )}
+      {
+        posts.length === 0 ? (
+          <p class="empty">등록된 글이 아직 없어요.</p>
+        ) : (
+          posts.map((post) => <PostItem post={post} />)
+        )
+      }
     </div>
   </section>
 </Layout>

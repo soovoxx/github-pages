@@ -27,9 +27,7 @@ const { series } = Astro.props as { series: SeriesGroup };
     </div>
 
     <div class="post-list">
-      {series.posts.map((post) => (
-        <PostItem post={post} />
-      ))}
+      {series.posts.map((post) => <PostItem post={post} />)}
     </div>
   </section>
 </Layout>

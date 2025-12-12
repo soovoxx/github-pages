@@ -2,16 +2,18 @@
 import { baseUrl } from "../constants";
 import Layout from "../layouts/Layout.astro";
 
-const posts = `${baseUrl}/posts/1`
+const posts = `${baseUrl}/posts/1`;
 ---
+
 <Layout>
   <section class="about-hero">
     <div class="hero-text">
       <p class="eyebrow">Hello, I'm Soovoxx</p>
       <h1>별 사이를 여행하며 만드는 프론트엔드 개발자</h1>
       <p class="lede">
-        디자인 시스템부터 작은 사이드 프로젝트까지, 천천히 기록하며 성장하고 있습니다.
-        이 블로그는 우주 한 켠에서 만난 생각과 실험을 모아두는 노트입니다.
+        디자인 시스템부터 작은 사이드 프로젝트까지, 천천히 기록하며 성장하고
+        있습니다. 이 블로그는 우주 한 켠에서 만난 생각과 실험을 모아두는
+        노트입니다.
       </p>
       <div class="cta-row">
         <a class="pill" href={posts}>포스트 보러가기</a>
@@ -38,12 +40,14 @@ const posts = `${baseUrl}/posts/1`
     <div class="card intro">
       <h2>About me</h2>
       <p>
-        사람들에게 도움이 되는 인터페이스를 고민하며, 배운 내용을 글과 코드로 기록합니다.
-        React, Astro, 디자인 시스템에 관심이 많고 최근에는 문서화와 글쓰기에도 집중하고 있습니다.
+        사람들에게 도움이 되는 인터페이스를 고민하며, 배운 내용을 글과 코드로
+        기록합니다. React, Astro, 디자인 시스템에 관심이 많고 최근에는 문서화와
+        글쓰기에도 집중하고 있습니다.
       </p>
       <p>
-        새로운 도구를 실험하거나 재미있는 오픈소스 프로젝트를 발견하면 바로 메모를 남깁니다.
-        언젠가 다시 돌아왔을 때도 흐름을 따라갈 수 있도록 스스로에게 쓰는 편지처럼 기록해요.
+        새로운 도구를 실험하거나 재미있는 오픈소스 프로젝트를 발견하면 바로
+        메모를 남깁니다. 언젠가 다시 돌아왔을 때도 흐름을 따라갈 수 있도록
+        스스로에게 쓰는 편지처럼 기록해요.
       </p>
     </div>
     <div class="card stats">
@@ -70,9 +74,16 @@ const posts = `${baseUrl}/posts/1`
     <div class="card focus">
       <h3>요즘 집중하는 것</h3>
       <ul>
-        <li><strong>프론트엔드 설계</strong> — 컴포넌트 구조와 상태 흐름을 단순하게 유지하기</li>
-        <li><strong>Astro 블로그 운영</strong> — 글 목록과 페이지를 더 알기 쉽게 구성하기</li>
-        <li><strong>글쓰기</strong> — 기술 내용도 편안하게 읽히도록 표현 연습하기</li>
+        <li>
+          <strong>프론트엔드 설계</strong> — 컴포넌트 구조와 상태 흐름을 단순하게
+          유지하기
+        </li>
+        <li>
+          <strong>Astro 블로그 운영</strong> — 글 목록과 페이지를 더 알기 쉽게 구성하기
+        </li>
+        <li>
+          <strong>글쓰기</strong> — 기술 내용도 편안하게 읽히도록 표현 연습하기
+        </li>
       </ul>
     </div>
     <div class="card contact">
@@ -80,7 +91,9 @@ const posts = `${baseUrl}/posts/1`
       <p>새로운 협업이나 의견이 있다면 언제든지 연락 주세요.</p>
       <div class="contact-links">
         <a href="mailto:hello@example.com">hello@example.com</a>
-        <a href="https://github.com/soovoxx" target="_blank" rel="noreferrer">GitHub</a>
+        <a href="https://github.com/soovoxx" target="_blank" rel="noreferrer"
+          >GitHub</a
+        >
         <a href={baseUrl}>홈으로 돌아가기</a>
       </div>
     </div>
@@ -128,7 +141,9 @@ const posts = `${baseUrl}/posts/1`
     text-decoration: none;
     font-weight: 700;
     box-shadow: 0 12px 28px var(--shadow);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    transition:
+      transform 0.2s ease,
+      box-shadow 0.2s ease;
   }
 
   .pill:hover {
@@ -153,7 +168,12 @@ const posts = `${baseUrl}/posts/1`
     width: min(360px, 100%);
     aspect-ratio: 1;
     border-radius: 50%;
-    background: radial-gradient(circle at 30% 30%, #f5edff 0%, #c7b8ff 45%, #9f8cfb 90%);
+    background: radial-gradient(
+      circle at 30% 30%,
+      #f5edff 0%,
+      #c7b8ff 45%,
+      #9f8cfb 90%
+    );
     box-shadow: 0 16px 40px var(--shadow);
     overflow: hidden;
   }
@@ -162,7 +182,11 @@ const posts = `${baseUrl}/posts/1`
     position: absolute;
     inset: 42% -18% auto -18%;
     height: 40px;
-    background: linear-gradient(90deg, rgba(255, 255, 255, 0.75), rgba(255, 255, 255, 0));
+    background: linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.75),
+      rgba(255, 255, 255, 0)
+    );
     border-radius: 50%;
     transform: rotate(-12deg);
     filter: blur(1px);
