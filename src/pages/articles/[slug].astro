@@ -96,6 +96,8 @@ const parsedPubDate = parsePubDate(pubDate);
       id: decodeURIComponent(link.hash.slice(1)),
     }));
 
+    const scrollOffset = 80;
+
     let lastActiveId = '';
 
     const setActive = (id) => {
@@ -113,9 +115,15 @@ const parsedPubDate = parsePubDate(pubDate);
     };
 
     const getOffsetTop = (el) => el.getBoundingClientRect().top + window.scrollY;
+    const scrollToHeading = (id) => {
+      const target = document.getElementById(id);
+      if (!target) return;
+      const targetTop = Math.max(0, getOffsetTop(target) - scrollOffset);
+      window.scrollTo({ top: targetTop, behavior: 'smooth' });
+    };
 
     const updateActive = () => {
-      const offsetY = window.scrollY + 140;
+      const offsetY = window.scrollY + scrollOffset + 20;
       let currentId = headings[0]?.id;
 
       for (const heading of headings) {
@@ -149,6 +157,15 @@ const parsedPubDate = parsePubDate(pubDate);
 
     const hash = decodeURIComponent(window.location.hash.replace('#', ''));
     if (hash) setActive(hash);
+
+    linkTargets.forEach(({ link, id }) => {
+      link.addEventListener('click', (event) => {
+        event.preventDefault();
+        scrollToHeading(id);
+        setActive(id);
+        history.replaceState(null, '', window.location.pathname + window.location.search);
+      });
+    });
   }
 </script>
 
@@ -158,10 +175,6 @@ const parsedPubDate = parsePubDate(pubDate);
   }
 
   .post-layout {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) 240px;
-    gap: 24px;
-    align-items: start;
 
     .post {
       width: 100%;
@@ -245,8 +258,10 @@ const parsedPubDate = parsePubDate(pubDate);
       padding: 4px;
       max-height: calc(100vh - 160px);
       overflow: auto;
-      right: 7%;
+      right: 3%;
       font-size: 12px;
+      min-width: 290px;
+      max-width: 290px;
 
       .toc-title {
         margin: 0 0 8px;
@@ -256,39 +271,48 @@ const parsedPubDate = parsePubDate(pubDate);
         letter-spacing: 0.02em;
       }
 
-      .toc-list {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-        display: grid;
+        .toc-list {
+          list-style: none;
+          padding: 0;
+          margin: 0;
+          display: grid;
+          grid-template-columns: 1fr;
 
-        .toc-item {
-          line-height: 0.5;
-        }
-      }
-
-      .toc-link {
-        display: block;
-        padding: 6px 8px;
-        border-radius: 10px;
-        color: var(--muted);
-        text-decoration: none;
-        border: 1px solid transparent;
-        transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
-
-        &:hover {
-          color: var(--text);
-          border-color: color-mix(in srgb, var(--accent) 45%, transparent);
-          background: color-mix(in srgb, var(--panel) 98%, transparent);
+          .toc-item {
+            line-height: 1.2;
+            min-width: 0;
+          }
         }
 
-        &.active {
-          color: var(--text);
-          border-color: color-mix(in srgb, var(--accent) 60%, transparent);
-          background: color-mix(in srgb, var(--accent) 12%, var(--panel));
-          font-weight: 700;
+        .toc-link {
+          display: block;
+          padding: 3px;
+          width: 100%;
+          max-width: 100%;
+          box-sizing: border-box;
+          min-width: 0;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          border-radius: 10px;
+          color: var(--muted);
+          text-decoration: none;
+          border: 1px solid transparent;
+          transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+
+          &:hover {
+            color: var(--text);
+            border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+            background: color-mix(in srgb, var(--panel) 98%, transparent);
+          }
+
+          &.active {
+            color: var(--text);
+            border-color: color-mix(in srgb, var(--accent) 60%, transparent);
+            background: color-mix(in srgb, var(--accent) 12%, var(--panel));
+            font-weight: 700;
+          }
         }
-      }
     }
   }
 
