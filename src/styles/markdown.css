@@ -35,6 +35,18 @@ hr {
   line-height: 1.35;
 }
 
+.content h2 {
+  padding-left: 6px;
+}
+
+.content h3 {
+  padding-left: 9px;
+}
+
+.content h4 {
+  padding-left: 12px;
+}
+
 .content :is(ul, ol) {
   margin-top: 0.5em;
   margin-left: 10px;
