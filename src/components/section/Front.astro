@@ -1,23 +1,27 @@
 ---
 interface Props {
-    link?: string;
-    text?: string;
+  link?: string;
+  text?: string;
 }
 
-const { link = '/', text = '' } = Astro.props;
+const { link = "/", text = "" } = Astro.props;
 ---
 
 <a class="front" href={link}>
   {text}
-  <svg class="front-icon" viewBox="0 0 20 20" aria-hidden="true" focusable="false">
+  <svg
+    class="front-icon"
+    viewBox="0 0 20 20"
+    aria-hidden="true"
+    focusable="false"
+  >
     <path
       d="M6 4.5 11.5 10 l-5.5 5.5"
       fill="none"
       stroke="currentColor"
       stroke-width="1.6"
       stroke-linecap="round"
-      stroke-linejoin="round"
-    />
+      stroke-linejoin="round"></path>
   </svg>
 </a>
 <style>

@@ -1,23 +1,26 @@
 ---
-import { baseUrl } from '../../constants';
-import type { PostSummary } from '../../lib';
+import { baseUrl } from "../../constants";
+import type { PostSummary } from "../../lib";
 
 interface Props {
-  post: PostSummary
+  post: PostSummary;
 }
 
-const { post: {slug, image, title, summary} } = Astro.props
-const targetUrl = `${baseUrl}/articles/${slug}`
+const {
+  post: { slug, image, title, summary },
+} = Astro.props;
+const targetUrl = `${baseUrl}/articles/${slug}`;
 
 const defaultImagePath = `${baseUrl}/article-default-image.png`;
 const resolvedImage =
-  image && !image.startsWith('http')
-    ? `${baseUrl}/${image.replace(/^\//, '')}`
-    : image ?? defaultImagePath;
+  image && !image.startsWith("http")
+    ? `${baseUrl}/${image.replace(/^\//, "")}`
+    : (image ?? defaultImagePath);
 ---
 
 <a class="post-card" href={targetUrl}>
-  <div class="post-visual" style={`background-image: url(${resolvedImage});`}></div>
+  <div class="post-visual" style={`background-image: url(${resolvedImage});`}>
+  </div>
   <div class="post-meta">
     <p class="post-title">{title}</p>
     <p class="post-summary">{summary}</p>
@@ -25,7 +28,7 @@ const resolvedImage =
 </a>
 
 <style>
-    .post-card {
+  .post-card {
     display: grid;
     gap: 12px;
     padding: 14px;
@@ -35,7 +38,9 @@ const resolvedImage =
     color: var(--text);
     border: 1px solid color-mix(in srgb, var(--text) 8%, transparent);
     box-shadow: 0 12px 28px var(--shadow);
-    transition: transform 0.15s ease, box-shadow 0.2s ease;
+    transition:
+      transform 0.15s ease,
+      box-shadow 0.2s ease;
   }
 
   .post-card:hover {

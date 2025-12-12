@@ -1,9 +1,9 @@
 ---
-import { baseUrl } from '../../constants';
-import type { PostSummary } from '../../lib'
+import { baseUrl } from "../../constants";
+import type { PostSummary } from "../../lib";
 
-interface Props{
-    post: PostSummary;
+interface Props {
+  post: PostSummary;
 }
 
 const { post } = Astro.props;
@@ -15,9 +15,7 @@ const { post } = Astro.props;
     <h3>{post.title}</h3>
     <p class="summary">{post.summary}</p>
     <div class="tags">
-      {post.tags.map((tag) => (
-          <span class="tag">#{tag}</span>
-      ))}
+      {post.tags.map((tag) => <span class="tag">#{tag}</span>)}
     </div>
   </div>
 </a>
@@ -34,7 +32,9 @@ const { post } = Astro.props;
     text-decoration: none;
     color: var(--text);
     box-shadow: 0 14px 28px var(--shadow);
-    transition: transform 0.16s ease, box-shadow 0.2s ease;
+    transition:
+      transform 0.16s ease,
+      box-shadow 0.2s ease;
   }
 
   .post-row:hover {

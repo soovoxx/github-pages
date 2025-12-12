@@ -10,6 +10,7 @@ const limitedPosts = posts.slice(0, 4);
 const postUrl = `${baseUrl}/posts/1`;
 const aboutUrl = `${baseUrl}/about`;
 ---
+
 <section class="hero" id="title">
   <div class="hero-graphic">
     <div class="planet">
@@ -21,7 +22,10 @@ const aboutUrl = `${baseUrl}/about`;
   <div class="hero-copy">
     <p class="eyebrow">{BLOG_NAME}</p>
     <h1>Small notes for my future self.</h1>
-    <p class="lede">매일 배운 것들을, 나중에 다시 꺼내볼 수 있게 기록합니다. <br/> 그리고 사이사이의 일상까지 남겨요.</p>
+    <p class="lede">
+      매일 배운 것들을, 나중에 다시 꺼내볼 수 있게 기록합니다. <br /> 그리고 사이사이의
+      일상까지 남겨요.
+    </p>
   </div>
 </section>
 
@@ -33,13 +37,13 @@ const aboutUrl = `${baseUrl}/about`;
     <Front text="더 많은 글 보기" link={postUrl} />
   </div>
   <div class="post-grid">
-    {limitedPosts.length === 0 ? (
-      <p class="empty">등록된 글이 아직 없어요.</p>
-    ) : (
-      limitedPosts.map((post) => (
-        <PostCard post={post} />
-      ))
-    )}
+    {
+      limitedPosts.length === 0 ? (
+        <p class="empty">등록된 글이 아직 없어요.</p>
+      ) : (
+        limitedPosts.map((post) => <PostCard post={post} />)
+      )
+    }
   </div>
 </section>
 
@@ -80,7 +84,12 @@ const aboutUrl = `${baseUrl}/about`;
     width: 180px;
     aspect-ratio: 1;
     border-radius: 50%;
-    background: radial-gradient(circle at 30% 30%, #f5edff 0%, #c5b7ff 45%, #9d83f8 90%);
+    background: radial-gradient(
+      circle at 30% 30%,
+      #f5edff 0%,
+      #c5b7ff 45%,
+      #9d83f8 90%
+    );
     box-shadow: 0 16px 40px var(--shadow);
     overflow: hidden;
   }
@@ -89,7 +98,11 @@ const aboutUrl = `${baseUrl}/about`;
     position: absolute;
     inset: 42% -18% auto -18%;
     height: 40px;
-    background: linear-gradient(90deg, rgba(255, 255, 255, 0.75), rgba(255, 255, 255, 0));
+    background: linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.75),
+      rgba(255, 255, 255, 0)
+    );
     border-radius: 50%;
     transform: rotate(-12deg);
     filter: blur(1px);

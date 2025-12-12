@@ -1,10 +1,11 @@
 ---
 import { baseUrl, BLOG_NAME } from "../../constants";
 
-  const about = `${baseUrl}/about`;
-  const posts = `${baseUrl}/posts/1`;
-  const series = `${baseUrl}/series`
+const about = `${baseUrl}/about`;
+const posts = `${baseUrl}/posts/1`;
+const series = `${baseUrl}/series`;
 ---
+
 <header class="site-header">
   <div class="nav-bar">
     <a class="brand" href={baseUrl}>{BLOG_NAME}</a>
@@ -12,7 +13,12 @@ import { baseUrl, BLOG_NAME } from "../../constants";
       <a href={about}>About</a>
       <a href={posts}>Posts</a>
       <a href={series}>Series</a>
-      <button type="button" id="themeToggle" class="toggle" aria-label="Toggle theme">
+      <button
+        type="button"
+        id="themeToggle"
+        class="toggle"
+        aria-label="Toggle theme"
+      >
         <!-- sun icon -->
         <svg
           viewBox="0 0 24 24"
@@ -28,27 +34,86 @@ import { baseUrl, BLOG_NAME } from "../../constants";
             r="4"
             fill="none"
             stroke="#1E1E2D"
-            stroke-width="2"
-          />
+            stroke-width="2"></circle>
           <!-- 위, 아래, 좌, 우 -->
-          <line x1="12" y1="3" x2="12" y2="5" stroke="#1E1E2D" stroke-width="2" stroke-linecap="round" />
-          <line x1="12" y1="19" x2="12" y2="21" stroke="#1E1E2D" stroke-width="2" stroke-linecap="round" />
-          <line x1="3" y1="12" x2="5" y2="12" stroke="#1E1E2D" stroke-width="2" stroke-linecap="round" />
-          <line x1="19" y1="12" x2="21" y2="12" stroke="#1E1E2D" stroke-width="2" stroke-linecap="round" />
+          <line
+            x1="12"
+            y1="3"
+            x2="12"
+            y2="5"
+            stroke="#1E1E2D"
+            stroke-width="2"
+            stroke-linecap="round"></line>
+          <line
+            x1="12"
+            y1="19"
+            x2="12"
+            y2="21"
+            stroke="#1E1E2D"
+            stroke-width="2"
+            stroke-linecap="round"></line>
+          <line
+            x1="3"
+            y1="12"
+            x2="5"
+            y2="12"
+            stroke="#1E1E2D"
+            stroke-width="2"
+            stroke-linecap="round"></line>
+          <line
+            x1="19"
+            y1="12"
+            x2="21"
+            y2="12"
+            stroke="#1E1E2D"
+            stroke-width="2"
+            stroke-linecap="round"></line>
 
           <!-- 대각선 방향(시계방향 11 1 5 7) -->
-          <line x1="5.5" y1="5.5" x2="7" y2="7" stroke="#1E1E2D" stroke-width="2" stroke-linecap="round" />
-          <line x1="17" y1="7" x2="18.5" y2="5.5" stroke="#1E1E2D" stroke-width="2" stroke-linecap="round" />
-          <line x1="17" y1="17" x2="18.5" y2="18.5" stroke="#1E1E2D" stroke-width="2" stroke-linecap="round" />
-          <line x1="5.5" y1="18.5" x2="7" y2="17" stroke="#1E1E2D" stroke-width="2" stroke-linecap="round" />
+          <line
+            x1="5.5"
+            y1="5.5"
+            x2="7"
+            y2="7"
+            stroke="#1E1E2D"
+            stroke-width="2"
+            stroke-linecap="round"></line>
+          <line
+            x1="17"
+            y1="7"
+            x2="18.5"
+            y2="5.5"
+            stroke="#1E1E2D"
+            stroke-width="2"
+            stroke-linecap="round"></line>
+          <line
+            x1="17"
+            y1="17"
+            x2="18.5"
+            y2="18.5"
+            stroke="#1E1E2D"
+            stroke-width="2"
+            stroke-linecap="round"></line>
+          <line
+            x1="5.5"
+            y1="18.5"
+            x2="7"
+            y2="17"
+            stroke="#1E1E2D"
+            stroke-width="2"
+            stroke-linecap="round"></line>
         </svg>
 
         <!-- moon icon -->
-        <svg class="icon moon-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <svg
+          class="icon moon-icon"
+          viewBox="0 0 24 24"
+          aria-hidden="true"
+          focusable="false"
+        >
           <path
             d="M21 13.06A9 9 0 0 1 11 3a1 1 0 0 1 1.22-1 9 9 0 1 0 9.78 9.78 1 1 0 0 1-1 1.22Z"
-            fill="currentColor"
-          />
+            fill="currentColor"></path>
         </svg>
       </button>
     </nav>
@@ -95,7 +160,10 @@ import { baseUrl, BLOG_NAME } from "../../constants";
     color: var(--text);
     border-radius: 12px;
     font-weight: 300;
-    transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+    transition:
+      background 0.2s ease,
+      color 0.2s ease,
+      transform 0.2s ease;
   }
 
   .nav-links a:hover {
@@ -114,14 +182,18 @@ import { baseUrl, BLOG_NAME } from "../../constants";
     padding: 10px 14px;
     cursor: pointer;
     font-weight: 300;
-    transition: transform 0.2s ease, box-shadow 0.25s ease;
+    transition:
+      transform 0.2s ease,
+      box-shadow 0.25s ease;
     box-shadow: 0 10px 25px var(--shadow);
   }
 
   .icon {
     width: 20px;
     height: 20px;
-    transition: opacity 0.2s ease, transform 0.25s ease;
+    transition:
+      opacity 0.2s ease,
+      transform 0.25s ease;
   }
 
   .toggle:hover .icon {
@@ -138,12 +210,12 @@ import { baseUrl, BLOG_NAME } from "../../constants";
     transform-origin: center;
   }
 
-  :global(:root[data-theme='light']) .sun-icon {
+  :global(:root[data-theme="light"]) .sun-icon {
     opacity: 1;
     transform: none;
   }
 
-  :global(:root[data-theme='dark']) .moon-icon {
+  :global(:root[data-theme="dark"]) .moon-icon {
     opacity: 1;
     transform: none;
   }
