@@ -7,13 +7,11 @@ category: "spring"
 tags: ["spring", "mockMvc"]
 ---
 
-# **1. mockMvc를 왜 쓰는가?**
+## **1. mockMvc를 왜 쓰는가?**
 
 스프링에서 REST API를 테스트하려면 실제 서버를 띄우지 않아도
 
 **HTTP 요청을 시뮬레이션해서 Controller → Service → Repository** 흐름을 검증할 수 있다.
-
-즉,
 
 - 서버를 실제로 실행하지 않아도 되고
 - HTTP 요청/응답을 그대로 흉내낼 수 있고
@@ -21,7 +19,7 @@ tags: ["spring", "mockMvc"]
 
 **API 검증을 빠르고 정확하게 할 수 있다는 장점이 있다.**
 
-# **2. mockMvc 테스트 종류 (중요!)**
+## **2. mockMvc 테스트 종류 (중요!)**
 
 mockMvc의 테스트 스코프는 어떤 어노테이션을 쓰느냐에 따라 달라진다.
 
@@ -39,7 +37,7 @@ mockMvc의 테스트 스코프는 어떤 어노테이션을 쓰느냐에 따라 
 
 → 무엇을 테스트하느냐에 따라 선택하면 된다.
 
-# **3. mockMvc 요청/응답 예시**
+## **3. mockMvc 요청/응답 예시**
 
 ```java
 @Test
@@ -61,7 +59,7 @@ fun `선수 조회 API - 성공`() {
 - Response JSON 구조가 기획대로 맞는지
 - Status 200 OK
 
-# **4. mockMvc 실행 후 Response 로그 해석**
+## **4. mockMvc 실행 후 Response 로그 해석**
 
 mockMvc가 찍어주는 response log는 API 동작 확인에 매우 유용하다.
 
@@ -83,7 +81,7 @@ MockHttpServletResponse:
 
 이 로그만 봐도 Controller → Service → Repository 흐름이 정상적으로 처리된 걸 알 수 있다.
 
-# **5. mockMvc로 검증해야 하는 포인트 체크리스트**
+## **5. mockMvc로 검증해야 하는 포인트 체크리스트**
 
 ### **요청(Request)**
 
@@ -105,7 +103,7 @@ MockHttpServletResponse:
 
 → 이 부분이 TIL에 들어가면 **실무 테스트 템플릿으로 재활용하기 좋음**.
 
-# **6. mockMvc 내부 동작 흐름 (간단 그림)**
+## **6. mockMvc 내부 동작 흐름 (간단 그림)**
 
 ```
 mockMvc.perform()
@@ -123,7 +121,7 @@ DB(H2 or MockBean)
 
 테스트 설정에 따라 Repository/DB가 실제인지 Mock인지만 달라진다.
 
-# **7. 요약**
+## **7. 요약**
 
 - mockMvc는 실제 서버 없이 API 호출을 시뮬레이션하는 도구
 - 테스트 스코프는 @WebMvcTest / @SpringBootTest 에 따라 달라짐

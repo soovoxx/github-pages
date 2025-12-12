@@ -7,15 +7,11 @@ category: "spring"
 tags: ["spring", "mockMvc"]
 ---
 
-# MockMvc 주요 메서드 정리
-
 MockMvc는 **스프링 MVC 컨트롤러를 실제 서버 없이 테스트**할 수 있게 해주는 도구이며, 핵심은 아래 3가지 축으로 이해하면 된다.
 
 ## 1. perform() — 요청 보내기
 
 테스트에서 **HTTP 요청을 실제로 보내는 역할**을 수행한다.
-
-### 예시
 
 ```kotlin
 mockMvc.perform(
@@ -29,12 +25,10 @@ get(), post(), put(), delete() 같은 빌더로 요청을 만든다.
 
 perform() 이후 이어서 **응답 검증**을 한다.
 
-### **예시**
-
 ```kotlin
 mockMvc.perform(get("/players/1"))
     .andExpect(status().isOk)
-    .andExpect(jsonPath("$.name").value("김영웅"))
+    .andExpect(jsonPath("$.name").value("홍길동"))
 ```
 
 ### **자주 쓰는 검증**
@@ -50,8 +44,6 @@ mockMvc.perform(get("/players/1"))
 
 보통 테스트 중 **응답 로그를 출력**할 때 사용한다.
 
-### **예시**
-
 ```kotlin
 mockMvc.perform(get("/players/1"))
     .andDo(print())
@@ -59,15 +51,13 @@ mockMvc.perform(get("/players/1"))
 
 ## **4. HTTP Request Builders (get/post/put/delete)**
 
-MockMvc 핵심은 아니지만 필수이므로 함께 정리한다.
-
-### **GET**
+### a. **GET**
 
 ```kotlin
 get("/players")
 ```
 
-### **POST + JSON Body**
+### b. **POST + JSON Body**
 
 ```kotlin
 post("/players")
@@ -75,19 +65,17 @@ post("/players")
     .contentType(MediaType.APPLICATION_JSON)
 ```
 
-### **Query Param**
+### c. **Query Param**
 
 ```kotlin
 get("/search")
-    .param("name", "정수")
+    .param("name", "soovoxx")
     .param("grade", "A")
 ```
 
 ## **5. andReturn() — 응답 직접 받기**
 
 응답의 body를 직접 꺼내서 사용할 때 유용하다.
-
-### **예시**
 
 ```kotlin
 val result = mockMvc.perform(get("/players/1"))
@@ -112,7 +100,7 @@ fun `선수 상세 조회 성공`() {
             .accept(MediaType.APPLICATION_JSON)
     )
         .andExpect(status().isOk)
-        .andExpect(jsonPath("$.name").value("김영웅"))
+        .andExpect(jsonPath("$.name").value("홍길동"))
         .andExpect(jsonPath("$.position").value("P"))
         .andDo(print())
 }

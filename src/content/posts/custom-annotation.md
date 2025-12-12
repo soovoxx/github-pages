@@ -7,7 +7,7 @@ category: "java"
 tags: ["java", "kotlin"]
 ---
 
-# **1. 커스텀 어노테이션 선언**
+## **1. 커스텀 어노테이션 선언**
 
 ```java
 - LogExecutionTime.java
@@ -19,7 +19,7 @@ annotation class LogExecutionTime
 
 ---
 
-# **2. AOP Aspect 만들기**
+## **2. AOP Aspect 만들기**
 
 메소드 실행 전후 시간을 찍는 @Around Advice를 작성.
 
@@ -67,7 +67,7 @@ fun getPlayerByName(name: String): ResPlayerDetailDTO? {
 [PlayerService.getPlayerByName] 실행 시간: 239 ms
 ```
 
-# **마무리 예시**
+## **마무리 예시**
 
 전체 흐름은 이렇게 돼:
 
