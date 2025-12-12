@@ -36,15 +36,15 @@ a {
   text-decoration-color: color-mix(in srgb, var(--accent) 70%, transparent);
   text-decoration-thickness: 2px;
   text-underline-offset: 3px;
-}
 
-a:visited {
-  color: color-mix(in srgb, var(--accent) 75%, var(--text) 25%);
-}
+  &:visited {
+    color: color-mix(in srgb, var(--accent) 75%, var(--text) 25%);
+  }
 
-a:hover,
-a:focus-visible {
-  text-decoration-color: var(--accent);
+  &:hover,
+  &:focus-visible {
+    text-decoration-color: var(--accent);
+  }
 }
 
 pre,
@@ -65,13 +65,13 @@ samp,
   border: 1px solid var(--code-border);
 }
 
-pre code {
-  display: block;
-  background: transparent;
-  color: inherit;
-}
-
 pre {
   padding: 20px;
   border-radius: 10px;
+
+  code {
+    display: block;
+    background: transparent;
+    color: inherit;
+  }
 }
