@@ -33,18 +33,20 @@ hr {
 .content :is(h2, h3, h4, h5, h6) {
   margin: 0.45em 0;
   line-height: 1.35;
+  padding-left: 10px;
+  position: relative;
 }
 
-.content h2 {
-  padding-left: 6px;
-}
-
-.content h3 {
-  padding-left: 9px;
-}
-
-.content h4 {
-  padding-left: 12px;
+.content :is(h2, h3, h4, h5, h6)::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 80%;
+  background: color-mix(in srgb, var(--accent) 85%, transparent);
+  border-radius: 999px;
 }
 
 .content :is(ul, ol) {
