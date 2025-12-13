@@ -45,7 +45,7 @@ console.log(prevPost, nextPost);
     <div class="tags">
       {
         tags.map((t) => (
-          <a class="tag" href={`${baseUrl}/${encodeURIComponent(t)}`}>
+          <a class="tag" href={`${baseUrl}/tags/${encodeURIComponent(t)}`}>
             #{t}
           </a>
         ))
