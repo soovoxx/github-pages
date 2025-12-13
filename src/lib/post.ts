@@ -17,13 +17,15 @@ export const parsePubDate = (raw: string): Date => {
   const trimmed = raw.trim();
   const hasTime = /\d{2}:\d{2}(:\d{2})?/.test(trimmed);
   const withTime = hasTime ? trimmed : `${trimmed} 00:00:00`;
-  const isoReady = withTime.includes("T") ? withTime : withTime.replace(" ", "T");
+  const isoReady = withTime.includes("T")
+    ? withTime
+    : withTime.replace(" ", "T");
   return new Date(isoReady);
 };
 
 export const getAllPosts = (): PostSummary[] => {
   const postEntries: Post[] = Object.values(
-    import.meta.glob("../content/posts/*.md", { eager: true })
+    import.meta.glob("../content/posts/*.md", { eager: true }),
   );
 
   return postEntries
@@ -41,7 +43,7 @@ export const getAllPosts = (): PostSummary[] => {
     .sort((a, b) => Number(b.date) - Number(a.date));
 };
 
-const slugifySeries = (name: string): string =>
+export const slugifySeries = (name: string): string =>
   encodeURIComponent(name.trim().toLowerCase().replace(/\s+/g, "-"));
 
 export type SeriesGroup = {
@@ -75,20 +77,40 @@ export const getSeriesGroups = (): SeriesGroup[] => {
 
 export const getPaginationMeta = (
   totalItems: number,
-  pageSize = POSTS_PER_PAGE
+  pageSize = POSTS_PER_PAGE,
 ) => {
   const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
   return { totalPages };
 };
 
+const normalizeSeries = (name?: string | null): string =>
+  (name ?? "").trim().toLowerCase();
+
 export const getAdjacentPosts = (
-  slug: string
-): { prevPost?: PostSummary; nextPost?: PostSummary } => {
+  slug: string,
+  seriesName?: string,
+): {
+  prevPost?: PostSummary;
+  nextPost?: PostSummary;
+  isSeriesScoped: boolean;
+} => {
   const allPosts = getAllPosts();
+  const requestedSeries = normalizeSeries(seriesName);
 
-  const currentIndex = allPosts.findIndex((p) => p.slug === slug);
-  const prevPost = currentIndex >= 0 ? allPosts[currentIndex + 1] : undefined; // older
-  const nextPost = currentIndex > 0 ? allPosts[currentIndex - 1] : undefined; // newer
+  const list =
+    requestedSeries.length > 0
+      ? allPosts.filter(
+          (post) => normalizeSeries(post.series) === requestedSeries,
+        )
+      : allPosts;
 
-  return { prevPost, nextPost };
+  const currentIndex = list.findIndex((p) => p.slug === slug);
+  const prevPost = currentIndex >= 0 ? list[currentIndex + 1] : undefined; // older
+  const nextPost = currentIndex > 0 ? list[currentIndex - 1] : undefined; // newer
+
+  return {
+    prevPost,
+    nextPost,
+    isSeriesScoped: requestedSeries.length > 0,
+  };
 };

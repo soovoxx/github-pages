@@ -4,12 +4,14 @@ import type { PostSummary } from "../../lib";
 
 interface Props {
   post: PostSummary;
+  hrefPrefix?: string;
 }
 
-const { post } = Astro.props;
+const { post, hrefPrefix } = Astro.props;
+const prefix = hrefPrefix ?? `${baseUrl}/post`;
 ---
 
-<a class="post-row" href={`${baseUrl}/articles/${post.slug}`}>
+<a class="post-row" href={`${prefix}/${post.slug}`}>
   <div class="row-meta">
     <p class="date">{post.date.toLocaleDateString("ko-KR")}</p>
     <h3>{post.title}</h3>

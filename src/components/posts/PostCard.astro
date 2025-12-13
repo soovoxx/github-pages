@@ -9,7 +9,7 @@ interface Props {
 const {
   post: { slug, image, title, summary },
 } = Astro.props;
-const targetUrl = `${baseUrl}/articles/${slug}`;
+const targetUrl = `${baseUrl}/posts/${slug}`;
 
 const defaultImagePath = `${baseUrl}/article-default-image.png`;
 const resolvedImage =

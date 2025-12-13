@@ -1,9 +1,9 @@
 ---
-import Layout from "../../layouts/Layout.astro";
-import { getSeriesGroups } from "../../lib/post";
-import type { SeriesGroup } from "../../lib/post";
-import { baseUrl } from "../../constants";
-import PostItem from "../../components/posts/PostItem.astro";
+import Layout from "../../../layouts/Layout.astro";
+import { getSeriesGroups } from "../../../lib/post";
+import type { SeriesGroup } from "../../../lib/post";
+import { baseUrl } from "../../../constants";
+import PostItem from "../../../components/posts/PostItem.astro";
 
 export async function getStaticPaths() {
   return getSeriesGroups().map((series) => ({
@@ -13,6 +13,8 @@ export async function getStaticPaths() {
 }
 
 const { series } = Astro.props as { series: SeriesGroup };
+
+const series_url = `${baseUrl}/series`;
 ---
 
 <Layout>
@@ -23,11 +25,15 @@ const { series } = Astro.props as { series: SeriesGroup };
         <h1>{series.name}</h1>
         <p class="lede">{series.posts.length}개의 글을 모았습니다.</p>
       </div>
-      <a class="back" href={`${baseUrl}/series`}>모든 시리즈 보기</a>
+      <a class="back" href={series_url}>모든 시리즈 보기</a>
     </div>
 
     <div class="post-list">
-      {series.posts.map((post) => <PostItem post={post} />)}
+      {
+        series.posts.map((post) => (
+          <PostItem post={post} hrefPrefix={`${series_url}/${series.slug}`} />
+        ))
+      }
     </div>
   </section>
 </Layout>

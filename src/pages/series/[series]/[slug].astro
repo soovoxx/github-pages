@@ -1,0 +1,64 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import PostDetail from "../../../components/posts/PostDetail.astro";
+import {
+  getAdjacentPosts,
+  parsePubDate,
+  slugifySeries,
+} from "../../../lib/post";
+import { baseUrl } from "../../../constants";
+import type { Post } from "../../../types";
+
+export async function getStaticPaths() {
+  const posts: Post[] = Object.values(
+    import.meta.glob("../../../content/posts/*.md", { eager: true }),
+  );
+
+  return posts
+    .filter(
+      (post) =>
+        Boolean(post.frontmatter.slug) && Boolean(post.frontmatter.series),
+    )
+    .map((post) => ({
+      params: {
+        series: slugifySeries(post.frontmatter.series as string),
+        slug: post.frontmatter.slug,
+      },
+      props: { post },
+    }));
+}
+
+const { post } = Astro.props;
+const {
+  Content,
+  frontmatter: { pubDate, title },
+} = post;
+const tags = post.frontmatter.tags || [];
+const seriesName = post.frontmatter.series?.trim() || "";
+const seriesSlug = slugifySeries(seriesName);
+const tocHeadings = post
+  .getHeadings()
+  .filter(({ depth }) => depth >= 1 && depth <= 4);
+
+const { prevPost, nextPost } = getAdjacentPosts(
+  post.frontmatter.slug,
+  seriesName,
+);
+const parsedPubDate = parsePubDate(pubDate);
+const navContext = `${seriesName} 시리즈에서 이어보기`;
+const linkPrefix = `${baseUrl}/series/${seriesSlug}`;
+---
+
+<Layout>
+  <PostDetail
+    title={title}
+    tags={tags}
+    parsedPubDate={parsedPubDate}
+    tocHeadings={tocHeadings}
+    navContext={navContext}
+    prevPost={prevPost}
+    nextPost={nextPost}
+    linkPrefix={linkPrefix}
+    Content={Content}
+  />
+</Layout>
