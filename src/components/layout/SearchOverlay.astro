@@ -1,0 +1,373 @@
+---
+import Finder from "../component/Finder.astro";
+import { getAllPosts } from "../../lib";
+import { baseUrl } from "../../constants";
+
+interface Props {
+  triggerSelector?: string;
+}
+
+const { triggerSelector = "[data-search-open]" } = Astro.props as Props;
+
+const posts =
+  (Astro.props as any)?.posts ||
+  getAllPosts().map((post) => ({
+    title: post.title,
+    summary: post.summary,
+    slug: post.slug,
+    tags: post.tags,
+    date: post.date.toISOString(),
+  }));
+
+const searchBaseUrl = (Astro.props as any)?.baseUrl ?? baseUrl;
+const serializedPosts = encodeURIComponent(JSON.stringify(posts));
+---
+
+<div
+  class="search-overlay"
+  data-search-overlay
+  data-base-url={searchBaseUrl}
+  data-trigger-selector={triggerSelector}
+  data-posts={serializedPosts}
+>
+  <div class="search-backdrop" data-search-close></div>
+  <div
+    class="search-panel"
+    role="dialog"
+    aria-modal="true"
+    aria-label="글 검색"
+  >
+    <div class="search-bar">
+      <div class="finder">
+        <Finder size={18} stroke="var(--text)" weight={36} />
+      </div>
+      <input
+        type="search"
+        name="keyword"
+        autocomplete="off"
+        placeholder="제목, 요약, 태그로 검색"
+        data-search-input
+      />
+      <button
+        class="close-btn"
+        type="button"
+        data-search-close
+        aria-label="닫기"
+      >
+        닫기
+      </button>
+    </div>
+
+    <div class="results" data-search-results aria-live="polite">
+      <p class="empty">검색어를 입력해 보세요.</p>
+    </div>
+  </div>
+</div>
+
+<script type="application/json" id="search-data">{JSON.stringify(posts)}</script>
+
+<script is:inline>
+  (() => {
+    const overlay = document.querySelector("[data-search-overlay]");
+    const input = overlay?.querySelector("[data-search-input]");
+    const resultsEl = overlay?.querySelector("[data-search-results]");
+    const triggerSelector =
+      overlay?.dataset.triggerSelector || "[data-search-open]";
+    const openTriggers = Array.from(document.querySelectorAll(triggerSelector));
+    const closeTriggers = overlay?.querySelectorAll("[data-search-close]");
+    const attrData = overlay?.dataset.posts ?? "";
+    const rawData =
+      attrData || document.getElementById("search-data")?.textContent || "[]";
+    let posts = [];
+    try {
+      const decoded = attrData ? decodeURIComponent(rawData) : rawData;
+      posts = JSON.parse(decoded) ?? [];
+    } catch (error) {
+      console.warn("검색 데이터를 불러오지 못했어요.", error);
+      posts = [];
+    }
+    const baseUrl = overlay?.dataset.baseUrl ?? "";
+
+    if (!overlay || !input || !resultsEl || openTriggers.length === 0) return;
+
+    const template = (item) => `
+      <a class="result-row" style="outline: none;" href="${`${baseUrl}/post/${item.slug}`}">
+        <div class="meta">
+          <p class="title">${item.title}</p>
+          <p class="summary">${item.summary || ""}</p>
+          ${
+            item.tags?.length
+              ? `<div class="tags">${item.tags
+                  .map((tag) => `<span class="tag">#${tag}</span>`)
+                  .join("")}</div>`
+              : ""
+          }
+        </div>
+      </a>
+    `;
+
+    const renderEmpty = (message) => {
+      resultsEl.innerHTML = `<p class="empty">${message}</p>`;
+    };
+
+    const render = (items) => {
+      if (!items.length) {
+        renderEmpty("검색 결과가 없어요.");
+        return;
+      }
+      resultsEl.innerHTML = items.map(template).join("");
+    };
+
+    const filterPosts = (query) => {
+      const term = query.trim().toLowerCase();
+      if (!term) {
+        renderEmpty("검색어를 입력해 보세요.");
+        return;
+      }
+
+      const matched = posts.filter((post) => {
+        const haystack = [
+          post.title ?? "",
+          post.summary ?? "",
+          ...(post.tags ?? []),
+        ]
+          .join(" ")
+          .toLowerCase();
+        return haystack.includes(term);
+      });
+
+      render(matched.slice(0, 50));
+    };
+
+    const open = () => {
+      overlay.classList.add("is-open");
+      document.documentElement.style.overflow = "hidden";
+      input.focus();
+    };
+
+    const close = () => {
+      overlay.classList.remove("is-open");
+      document.documentElement.style.overflow = "";
+      input.value = "";
+      renderEmpty("검색어를 입력해 보세요.");
+    };
+
+    openTriggers.forEach((trigger) => {
+      trigger.addEventListener("click", (event) => {
+        event.preventDefault();
+        open();
+      });
+    });
+
+    closeTriggers?.forEach((trigger) => {
+      trigger.addEventListener("click", close);
+    });
+
+    overlay.addEventListener("click", (event) => {
+      if (
+        event.target === overlay ||
+        event.target.classList.contains("search-backdrop")
+      ) {
+        close();
+      }
+    });
+
+    input.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        filterPosts(input.value);
+      }
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && overlay.classList.contains("is-open")) {
+        close();
+      }
+    });
+  })();
+</script>
+
+<style lang="scss">
+  .search-overlay {
+    position: fixed;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 40;
+  }
+
+  .search-overlay.is-open {
+    display: flex;
+  }
+
+  .search-backdrop {
+    position: absolute;
+    inset: 0;
+    background: color-mix(in srgb, var(--bg) 40%, #000 45%);
+    backdrop-filter: blur(10px);
+  }
+
+  .search-panel {
+    position: relative;
+    width: min(900px, 92vw);
+    max-height: min(680px, 90vh);
+    background: var(--panel);
+    border: 1px solid color-mix(in srgb, var(--text) 12%, transparent);
+    box-shadow: 0 22px 60px color-mix(in srgb, #000 25%, transparent);
+    border-radius: 20px;
+    padding: 14px;
+    display: grid;
+    gap: 14px;
+    overflow: hidden;
+  }
+
+  .search-bar {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 10px;
+    background: color-mix(in srgb, var(--panel) 96%, transparent);
+    border-bottom: 1px solid color-mix(in srgb, var(--text) 12%, transparent);
+    padding: 10px 12px;
+  }
+
+  .search-bar input {
+    width: 100%;
+    border: none;
+    background: transparent;
+    color: var(--text);
+    font-size: 1rem;
+    outline: none;
+  }
+
+  .close-btn {
+    border: 1px solid color-mix(in srgb, var(--text) 16%, transparent);
+    background: var(--panel);
+    color: var(--text);
+    padding: 8px 10px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 700;
+    transition:
+      transform 0.15s ease,
+      box-shadow 0.2s ease;
+    box-shadow: 0 8px 18px var(--shadow);
+  }
+
+  .close-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 12px 26px var(--shadow);
+  }
+
+  .results {
+    background: color-mix(in srgb, var(--panel) 98%, transparent);
+    // border: 1px solid color-mix(in srgb, var(--text) 8%, transparent);
+    padding: 6px;
+    overflow: auto;
+    min-height: 240px;
+    max-height: 520px;
+    display: grid;
+    gap: 6px;
+    align-content: start;
+    align-items: start;
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in srgb, var(--text) 14%, transparent)
+      color-mix(in srgb, var(--panel) 90%, transparent);
+  }
+
+  :global(.result-row) {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 12px;
+    padding: 12px 14px;
+    border-radius: 12px;
+    text-decoration: none;
+    color: var(--text);
+    border: 1px solid color-mix(in srgb, var(--text) 10%, transparent);
+    background: color-mix(in srgb, var(--panel) 96%, transparent);
+    box-shadow: 0 10px 22px var(--shadow);
+    transition:
+      transform 0.15s ease,
+      box-shadow 0.2s ease;
+    align-items: start;
+  }
+
+  :global(.result-row:hover) {
+    transform: translateY(-2px);
+    box-shadow: 0 14px 28px var(--shadow);
+    outline:auto
+  }
+
+  :global(.result-row:focus-visible) {
+    border-color: color-mix(in srgb, var(--accent) 55%, transparent);
+    box-shadow:
+      0 14px 28px var(--shadow),
+      0 0 0 3px color-mix(in srgb, var(--accent) 35%, transparent);
+    transform: translateY(-2px);
+  }
+
+  :global(.result-row .meta) {
+    display: grid;
+    gap: 6px;
+  }
+
+  :global(.result-row .title) {
+    margin: 0;
+    font-weight: 700;
+    font-size: 1.02rem;
+  }
+
+  :global(.result-row .summary) {
+    margin: 0;
+    color: var(--muted);
+    line-height: 1.45;
+  }
+
+  :global(.result-row .tags) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  :global(.result-row .tag) {
+    padding: 4px 8px;
+    border-radius: 10px;
+    background: color-mix(in srgb, var(--text) 8%, transparent);
+    color: var(--text);
+    font-size: 0.85rem;
+    letter-spacing: 0.02em;
+  }
+
+  :global(.result-row .go) {
+    align-self: center;
+    color: var(--muted);
+    font-weight: 700;
+  }
+
+  .empty {
+    margin: 0;
+    padding: 12px;
+    color: var(--muted);
+  }
+
+  @media (max-width: 640px) {
+    .search-panel {
+      padding: 10px;
+    }
+
+    .search-bar {
+      grid-template-columns: auto 1fr;
+      gap: 8px;
+    }
+
+    .close-btn {
+      grid-column: span 2;
+      justify-self: end;
+    }
+
+    .result-row {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

@@ -1,5 +1,7 @@
 ---
 import { baseUrl, BLOG_NAME } from "../../constants";
+import Finder from "../component/Finder.astro";
+import SearchOverlay from "./SearchOverlay.astro";
 
 const about = `${baseUrl}/about`;
 const posts = `${baseUrl}/posts/1`;
@@ -13,6 +15,14 @@ const series = `${baseUrl}/series`;
       <a href={about}>About</a>
       <a href={posts}>Posts</a>
       <a href={series}>Series</a>
+      <button
+        type="button"
+        class="icon-button"
+        data-search-open
+        aria-label="검색 열기"
+      >
+        <Finder size={18} stroke="var(--text)" weight={36} />
+      </button>
       <button
         type="button"
         id="themeToggle"
@@ -120,6 +130,8 @@ const series = `${baseUrl}/series`;
   </div>
 </header>
 
+<SearchOverlay />
+
 <style lang="scss">
   .site-header {
     position: sticky;
@@ -168,6 +180,28 @@ const series = `${baseUrl}/series`;
 
   .nav-links a:hover {
     background: color-mix(in srgb, var(--accent) 10%, transparent);
+  }
+
+  .icon-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    border: 1px solid color-mix(in srgb, var(--text) 18%, transparent);
+    background: var(--panel);
+    color: var(--text);
+    cursor: pointer;
+    transition:
+      transform 0.2s ease,
+      box-shadow 0.25s ease;
+    box-shadow: 0 10px 22px var(--shadow);
+  }
+
+  .icon-button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 14px 28px var(--shadow);
   }
 
   .toggle {
