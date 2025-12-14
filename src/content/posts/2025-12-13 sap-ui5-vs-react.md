@@ -2,7 +2,7 @@
 title: "UI5와 다른 프론트엔드 언어 비교"
 slug: "about-ui5-2"
 pubDate: "2025-12-14 06:17:00"
-summary: "ui5, react, vue 비교"
+summary: "ui5, react 비교"
 category: "ui5"
 series: "SAP-UI5"
 tags: ["ui5"]

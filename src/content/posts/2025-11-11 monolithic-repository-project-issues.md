@@ -1,7 +1,7 @@
 ---
 title: "모놀리식 레포지토리 프로젝트의 문제"
 slug: "mono-repository-2"
-pubDate: "2025-11-10 15:39:30"
+pubDate: "2025-11-11 15:39:30"
 summary: "모놀리식 레포의 개발/배포/운영간 발생할 수 있는 문제들"
 category: "msa"
 series: "Microservice Architecture"
