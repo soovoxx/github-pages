@@ -30,7 +30,6 @@ hr {
   }
 
   :is(h2, h3, h4, h5, h6) {
-    margin: 0.45em 0;
     line-height: 1.35;
     padding-left: 10px;
     position: relative;
@@ -45,6 +44,31 @@ hr {
       height: 80%;
       background: color-mix(in srgb, var(--accent) 85%, transparent);
       border-radius: 999px;
+    }
+
+    &:is(h2) {
+      margin-top: 1.2em;
+      margin-bottom: 0.55em;
+    }
+
+    &:is(h3) {
+      margin-top: 1em;
+      margin-bottom: 0.5em;
+    }
+
+    &:is(h4) {
+      margin-top: 0.9em;
+      margin-bottom: 0.45em;
+    }
+
+    &:is(h5) {
+      margin-top: 0.8em;
+      margin-bottom: 0.4em;
+    }
+
+    &:is(h6) {
+      margin-top: 0.7em;
+      margin-bottom: 0.35em;
     }
   }
 
