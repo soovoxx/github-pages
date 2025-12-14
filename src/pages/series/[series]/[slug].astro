@@ -1,17 +1,13 @@
 ---
-import Layout from "../../../layouts/Layout.astro";
-import PostDetail from "../../../components/posts/PostDetail.astro";
-import {
-  getAdjacentPosts,
-  parsePubDate,
-  slugifySeries,
-} from "../../../lib/post";
-import { baseUrl } from "../../../constants";
-import type { Post } from "../../../types";
+import Layout from "@/layouts/Layout.astro";
+import PostDetail from "@/components/posts/PostDetail.astro";
+import { getAdjacentPosts, parsePubDate, slugifySeries } from "@/lib/post";
+import { baseUrl } from "@/constants";
+import type { Post } from "@/types";
 
 export async function getStaticPaths() {
   const posts: Post[] = Object.values(
-    import.meta.glob("../../../content/posts/*.md", { eager: true }),
+    import.meta.glob("@/content/posts/*.md", { eager: true }),
   );
 
   return posts

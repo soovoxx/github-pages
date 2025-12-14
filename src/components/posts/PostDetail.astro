@@ -1,8 +1,8 @@
 ---
 import type { AstroComponentFactory } from "astro/runtime/server/index.js";
-import { baseUrl } from "../../constants";
-import "../../styles/markdown.scss";
-import type { PostSummary } from "../../lib/post";
+import { baseUrl } from "@/constants";
+import "@/styles/markdown.scss";
+import type { PostSummary } from "@/lib/post";
 
 interface TocHeading {
   depth: number;
@@ -59,7 +59,7 @@ const {
           <div class="nav-links">
             {prevPost ? (
               <a class="nav-link" href={`${linkPrefix}/${prevPost.slug}`}>
-                <span class="nav-label">이전 글</span>
+                <span class="nav-label">이전 포스트</span>
                 <span class="nav-title">{prevPost.title}</span>
               </a>
             ) : (
@@ -67,7 +67,7 @@ const {
             )}
             {nextPost ? (
               <a class="nav-link" href={`${linkPrefix}/${nextPost.slug}`}>
-                <span class="nav-label">다음 글</span>
+                <span class="nav-label">다음 포스트</span>
                 <span class="nav-title">{nextPost.title}</span>
               </a>
             ) : (

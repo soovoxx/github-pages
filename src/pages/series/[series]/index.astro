@@ -1,9 +1,9 @@
 ---
-import Layout from "../../../layouts/Layout.astro";
-import { getSeriesGroups } from "../../../lib/post";
-import type { SeriesGroup } from "../../../lib/post";
-import { baseUrl } from "../../../constants";
-import PostItem from "../../../components/posts/PostItem.astro";
+import Layout from "@/layouts/Layout.astro";
+import { getSeriesGroups } from "@/lib/post";
+import type { SeriesGroup } from "@/lib/post";
+import { baseUrl } from "@/constants";
+import PostItem from "@/components/posts/PostItem.astro";
 
 export async function getStaticPaths() {
   return getSeriesGroups().map((series) => ({

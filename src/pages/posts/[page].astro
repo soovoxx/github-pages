@@ -1,8 +1,8 @@
 ---
-import Layout from "../../layouts/Layout.astro";
-import { getAllPosts, getPaginationMeta } from "../../lib/post";
-import { baseUrl, POSTS_PER_PAGE } from "../../constants";
-import PostItem from "../../components/posts/PostItem.astro";
+import Layout from "@/layouts/Layout.astro";
+import { getAllPosts, getPaginationMeta } from "@/lib/post";
+import { baseUrl, POSTS_PER_PAGE } from "@/constants";
+import PostItem from "@/components/posts/PostItem.astro";
 
 // GitHub Pages용 baseUrl (예: /github-pages)
 const posts = getAllPosts();

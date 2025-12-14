@@ -1,5 +1,5 @@
-import type { Post } from "../types";
-import { POSTS_PER_PAGE } from "../constants";
+import type { Post } from "@/types";
+import { POSTS_PER_PAGE } from "@/constants";
 
 export type PostSummary = {
   title: string;

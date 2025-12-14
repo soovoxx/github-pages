@@ -1,7 +1,7 @@
 ---
-import PostItem from "../../components/posts/PostItem.astro";
-import Layout from "../../layouts/Layout.astro";
-import { getAllPosts } from "../../lib/post";
+import PostItem from "@/components/posts/PostItem.astro";
+import Layout from "@/layouts/Layout.astro";
+import { getAllPosts } from "@/lib/post";
 
 const rawTag = Astro.params.tag ?? "";
 const currentTag = decodeURIComponent(rawTag);
