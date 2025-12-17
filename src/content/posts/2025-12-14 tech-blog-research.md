@@ -2,7 +2,7 @@
 title: "Astro로 GitHub 블로그 만들기"
 slug: "github-blog-with-astro"
 pubDate: "2025-12-15 00:00:00"
-summary: "Astro와 GitHub Pages로 개발 블로그를 구성하고 배포하는 과정 기록"
+summary: "GitHub Pages로 개발 블로그를 구성하는데 왜 Astro를 선택했는지"
 series: "Blog"
 tags: ["typescript", "github-pages", "astro"]
 ---
