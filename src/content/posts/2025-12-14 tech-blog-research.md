@@ -7,7 +7,9 @@ series: "Blog"
 tags: ["typescript", "github-pages", "astro"]
 ---
 
-사실 원래 블로그가 있었는데 `jekyll` 이거 쓰기싫어서 쌀짝 쓰다가 유기했음
+사실 예전에 `Jekyll` 기반 블로그를 운영한 적이 있었는데, <br/>
+Ruby 기반이라는 점과 테마 커스터마이징의 부담 때문에 조금 쓰다 자연스럽게 유기하게 되었음 ㅠ <br/>
+~~루비야 미안해~~
 
 그러다 chatgpt 에게 요즘은 블로그 뭐로 만드냐 물어보다 나온게 추천중에 이러니까 찾아준게 `astro` 였음
 
@@ -128,7 +130,8 @@ npm create astro@latest
 - **좋았던점**
   1. Pages/ 기반의 라우팅이 편리했음
   2. markdown에 상단에 `frontmatter`를 작성하여 markdown을 사용하면서 응용을 하기 편했다 (ex. tag별 모아보기, series를 기술하여, 시리즈별로 보기, 차후 기능추가예정이지만, 카테고리별로 글을 본다던지)
-  3. 가볍게 프론트엔드를 맛보기에도 괜찮은 프레임워크 같았음 (page router, layout, component 분리) CSR 기반이라 즉각적으로 화면도 볼 수 있어서 꽤나 괜찮다고 생각했음
+  3. 가볍게 프론트엔드를 맛보기에도 괜찮은 프레임워크 같았음 (page router, layout, component 분리)
+  4. 기본적으로 정적 HTML 기반이라 구조를 이해하기 쉬웠고, 필요한 컴포넌트만 client-side로 동작시키는 방식이 인상적이었다.
 
 - **안좋았던점 or 아쉬운점**
   1. 아무래도 정적(CSR client side rendering) 방식이다보니, QueryString, 페이징처리, 첫페이지에 포스트 4개정도 가져와서 보여줘야 하는데 어려워서(~하긴했음..~) 이런게 **"아 이게 왜안돼"** 이런느낌이 많이 들었다
@@ -141,7 +144,7 @@ npm create astro@latest
 가볍게? Docs형태의 사이트를 만들고 싶었다, 라고 한다면 추천해볼만하다.<br/>
 그렇지만, 블로그지만 Web Application을 고민하고 있다라고 하면 추천하진 않음<br/>
 
-그냥 **JS/TS용 Jekyll** 그이상 그이하도 아님<br/>
+개인적으로는 Astro를 `JS/TS 기반으로 다시 설계된 Jekyll` 에 가깝게 느꼈음<br/>
 
 만약 Astro에서 한계를 느낄거같다. <br/>
-라고한다면 Next, Nuxt로 페이지만들고, `Vercel`로 배포 하는걸 알아보는게 편할지도
+라고한다면 Next, Nuxt로 페이지만들고, `Vercel`로 배포 하는걸 알아보는게 편할것 같다
