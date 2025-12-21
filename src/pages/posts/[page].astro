@@ -31,9 +31,9 @@ export async function getStaticPaths() {
 <Layout>
   <section class="post-section">
     <div class="page-header">
-      <div>
+      <div class="post-left-section">
         <p class="eyebrow">All Posts</p>
-        <h1>기록을 모아 둔 우주 정거장</h1>
+        <h1>기록이 머무는 곳</h1>
       </div>
       <div class="counter">
         <p class="count">{posts.length}</p>
@@ -80,6 +80,11 @@ export async function getStaticPaths() {
     padding: 26px 32px;
     border: 1px solid color-mix(in srgb, var(--text) 10%, transparent);
     box-shadow: 0 18px 42px var(--shadow);
+
+    .post-left-section {
+      display: grid;
+      gap: 10px;
+    }
   }
 
   .page-header h1 {
