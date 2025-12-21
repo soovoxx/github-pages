@@ -6,4 +6,9 @@ export default defineConfig({
   site: "https://soovoxx.github.io",
   base: "/github-pages", // 레포 이름
   integrations: [mdx()],
+  markdown: {
+    shikiConfig: {
+      theme: "dracula",
+    },
+  },
 });
