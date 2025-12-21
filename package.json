@@ -9,6 +9,7 @@
     "astro": "astro"
   },
   "dependencies": {
+    "@astrojs/mdx": "^4.0.1",
     "astro": "^5.16.4",
     "rehype-pretty-code": "^0.14.1"
   },
