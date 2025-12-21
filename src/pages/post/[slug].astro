@@ -20,7 +20,7 @@ export async function getStaticPaths() {
 const { post } = Astro.props;
 const {
   Content,
-  frontmatter: { pubDate, title },
+  frontmatter: { pubDate, title, summary },
 } = post;
 const tags = post.frontmatter.tags || [];
 const tocHeadings = post
@@ -36,6 +36,7 @@ const navContext = "전체 글에서 이어보기";
   <PostDetail
     title={title}
     tags={tags}
+    summary={summary}
     parsedPubDate={parsedPubDate}
     tocHeadings={tocHeadings}
     navContext={navContext}

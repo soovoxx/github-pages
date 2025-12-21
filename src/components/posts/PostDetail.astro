@@ -27,6 +27,7 @@ const {
   Content,
   title,
   tags,
+  summary,
   parsedPubDate,
   tocHeadings,
   navContext = "전체 글에서 이어보기",
@@ -40,6 +41,7 @@ const {
   <article class="post">
     <p class="eyebrow">{parsedPubDate.toLocaleDateString("ko-KR")}</p>
     <h1 class="title">{title}</h1>
+    <div class="summary">{summary}</div>
     <div class="tags">
       {
         tags.map((t) => (
@@ -265,6 +267,16 @@ const {
         margin: 15px 0;
       }
 
+      .summary {
+        display: flex;
+        justify-content: flex-end;
+        margin: 6px 0 4px;
+        font-size: 1.02em;
+        line-height: 1.6;
+        font-weight: 600;
+        color: color-mix(in srgb, var(--text) 70%, var(--muted));
+      }
+
       .tags {
         display: flex;
         gap: 5px;
@@ -420,8 +432,7 @@ const {
         color: var(--muted);
         text-decoration: none;
         border: 1px solid transparent;
-        transition:
-          font-weight 0.15s ease;
+        transition: font-weight 0.15s ease;
         position: relative;
         font-weight: 500;
 
