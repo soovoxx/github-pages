@@ -12,6 +12,11 @@ export type PostSummary = {
   series?: string;
 };
 
+export const getPostEntries = (): Post[] =>
+  Object.values(
+    import.meta.glob("@/content/posts/*.{md,mdx}", { eager: true }),
+  );
+
 // Ensures a time component exists so sorting can consider hh:mm:ss.
 export const parsePubDate = (raw: string): Date => {
   const trimmed = raw.trim();
@@ -24,9 +29,7 @@ export const parsePubDate = (raw: string): Date => {
 };
 
 export const getAllPosts = (): PostSummary[] => {
-  const postEntries: Post[] = Object.values(
-    import.meta.glob("../content/posts/*.md", { eager: true }),
-  );
+  const postEntries = getPostEntries();
 
   return postEntries
     .filter((post) => Boolean(post.frontmatter.slug))
