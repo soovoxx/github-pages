@@ -149,7 +149,7 @@ public class PostController implements PostApiDocs {
 
 `Swagger` 관련한 코드를 `interface`로 분리하여, 코드를 가독성 좋게 하는건 좋지만,
 
-다만 문서 인터페이스를 전역 docs/ 패키지로 몰아넣는 방식은 팀 규모/구조에 따라 트레이드오프가 있다.
+다만 문서 인터페이스를 전역 docs/ 패키지로 몰아넣는 방식은 팀 규모/구조에 따라 문제가 있을 수 있음.
 
 - 단일 모듈: 패키지 위치 때문에 import/implements가 깨지진 않는 편
 - 멀티모듈/의존성 규칙 강제: docs가 feature DTO를 참조하는 순간 의존성 방향이 꼬여 순환 의존성 리스크가 생길 수 있음

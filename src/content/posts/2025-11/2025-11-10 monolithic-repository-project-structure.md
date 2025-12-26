@@ -50,7 +50,7 @@ tags: ["msa", "mono-repo"]
 
 ### case a. 단일 서버 + 단일 DB
 
-![alt text](../images/single-server-architecture.png)
+![alt text](../../images/single-server-architecture.png)
 
 가장 흔한 형태:
 

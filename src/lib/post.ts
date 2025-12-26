@@ -14,7 +14,7 @@ export type PostSummary = {
 
 export const getPostEntries = (): Post[] =>
   Object.values(
-    import.meta.glob("@/content/posts/*.{md,mdx}", { eager: true }),
+    import.meta.glob("@/content/posts/**/*.{md,mdx}", { eager: true }),
   );
 
 // Ensures a time component exists so sorting can consider hh:mm:ss.
