@@ -74,7 +74,7 @@ npm create astro@latest
 
 ### 4-2. 설치 종료 및 실행결과
 
-![](../images/2025-12-14/blog-template.png)
+![](../../images/2025-12-14/blog-template.png)
 
 ## 5. 파일 및 디렉터리 구조
 
