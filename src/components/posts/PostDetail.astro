@@ -248,14 +248,10 @@ const {
 </script>
 
 <style lang="scss">
-  :global(html) {
-    scroll-behavior: smooth;
-  }
-
   .post-layout {
     .post {
       width: 100%;
-      max-width: 900px;
+      max-width: 800px;
       margin: 0 auto;
       background: color-mix(in srgb, var(--panel) 88%, transparent);
       padding: 30px 44px;
@@ -393,6 +389,7 @@ const {
       &.over-end {
         opacity: 0;
         filter: blur(0.6px);
+        pointer-events: none;
       }
 
       .toc-title {
@@ -453,6 +450,14 @@ const {
         order: -1;
         max-height: none;
         box-shadow: 0 10px 24px var(--shadow);
+      }
+    }
+  }
+
+  @media (max-width: 1600px) {
+    .post-layout {
+      .toc {
+        display: none;
       }
     }
   }
