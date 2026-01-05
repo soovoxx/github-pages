@@ -1,0 +1,306 @@
+---
+title: "블로그에 Toc(Table of contents) 만들기"
+slug: "make-toc-of-contents"
+pubDate: "2026-01-04 16:53:00"
+summary: "블로그에 목차 기능 만들기"
+series: "Blog"
+tags: ["astro", "toc", "table-of-contents"]
+---
+
+가끔 어떤 블로그들 가보면, Header와 Contents 사이에서 스크롤을 내리면 Progress bar가 생기면서, 현재글을 어디까지 읽었는지 시각적으로 보여주는 기능이 있음 <br/>
+본인은 목차 기능과 Progress bar 기능을 같이 넣고 싶어서, `Astro`로 만든 블로그에 적용해보았다. <br/>
+
+## 1. 목차 (Table of contents) 만들기
+
+목차기능을 만드려면 읽어들인 markdown 문서에서 `Header tag` 들을 추출하여야 한다. <br/>
+본인은 뎁스가 그렇게 길진 않을거같아서 `h2`, `h3`, `h4` 태그만 추출하기로 하였다. <br/>
+
+### 1-1. markdown 문서에서 Header 태그 추출하기
+
+```ts
+// types/index.ts
+import type { MarkdownInstance } from "astro";
+
+interface PostFrontmatter {
+  title: string;
+  slug: string;
+  pubDate: string;
+  // any attributes...
+}
+
+export type Post = MarkdownInstance<PostFrontmatter>;
+
+// pages/post/[slug].astro
+// post는 markdown 문서 전체를 의미
+const tocHeadings = post
+  .getHeadings()
+  .filter(({ depth }) => depth >= 2 && depth <= 4);
+```
+
+마지막에 `filter`를 사용하여 `h2`부터 `h4`까지만 추출하였다. <br/>
+이제 `tocHeadings`에는 다음과 같은 데이터가 담기게 된다. <br/>
+
+```json
+[
+  {
+    "depth": 2,
+    "slug": "1-목차table-of-contents-만들기",
+    "text": "1. 목차(Table of contents) 만들기"
+  },
+  {
+    "depth": 3,
+    "slug": "1-1-markdown-문서에서-header-태그-추출하기",
+    "text": "1-1. markdown 문서에서 Header 태그 추출하기"
+  }
+]
+```
+
+- `depth`는 Header 태그의 뎁스를 의미하며
+- `slug`는 Astro가 heading 텍스트를 기반으로 만든 anchor id(링크 이동용 문자열)를 의미함
+- `text`는 Header 태그의 텍스트 내용을 의미한다.
+
+**이제 이 데이터를 이용하여 목차를 렌더링하면 된다.** <br/>
+
+### 1-2. 목차 렌더링 하기
+
+```tsx
+{
+  tocHeadings.length > 0 && (
+    <aside class="toc" aria-label="On this page">
+      <div class="toc-body">
+        {/* Progress bar */}
+        <div class="toc-progress" aria-hidden="true">
+          <div class="toc-progress-bar" />
+        </div>
+        <ul class="toc-list">
+          {tocHeadings.map((heading) => (
+            <li class="toc-item">
+              <a
+                class="toc-link"
+                style={`padding-left: ${6 + Math.max(0, heading.depth - 1) * 10}px`}
+                href={`#${heading.slug}`}
+              >
+                {heading.text}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </aside>
+  );
+}
+```
+
+위에서 추출한 `tocHeadings` 데이터를 `map()`을 사용하여 렌더링한다. <br/>
+`padding-left` 속성을 이용하여 뎁스에 따라 들여쓰기를 다르게 하였다.
+
+## 2. Progress bar 만들기
+
+목차 기능을 만들었으니, 이제 Progress bar 기능을 만들어보자. <br/>
+스크롤 이벤트를 감지하여, 현재 스크롤 위치에 따라 Progress bar의 높이를 조절하는 방식으로 구현하였다. <br/>
+
+```tsx
+<div class="toc-progress" aria-hidden="true">
+  <div class="toc-progress-bar" />
+</div>
+```
+
+위와 같이 Progress bar의 HTML 구조를 만든다. <br/>
+`.toc-progress`는 Progress bar의 배경을 의미하며, `.toc-progress-bar`는 실제로 높이가 조절되는 바를 의미함 <br/>
+
+---
+
+**아래는 함수에 사용되는 변수 선언부**
+
+```ts
+// TOC에 있는 모든 링크 요소를 선택
+const tocLinks = Array.from(document.querySelectorAll(".toc a"));
+
+// 본문에서 id가 있는 heading만 선택
+const headings = Array.from(
+  document.querySelectorAll(".content :is(h1, h2, h3, h4)"),
+).filter((heading) => heading.id);
+
+// 각 TOC 링크와 대응되는 heading id를 매핑
+const linkTargets = tocLinks.map((link) => ({
+  link,
+  id: decodeURIComponent(link.hash.slice(1)),
+}));
+```
+
+### 2-1. 목차 클릭시, 해당 Heading으로 이동하기
+
+목차 링크를 클릭했을 때 브라우저의 기본 앵커 동작을 막고,
+헤더 높이만큼 오프셋을 주어 부드럽게 스크롤 이동하도록 처리<br/>
+아래 예시는 각 목차 링크에 클릭 핸들러를 달아 스무스 스크롤과 히스토리 상태 정리를 수행합니다.
+
+```ts
+// toc 하위에 link 요소들에게 click event listener 등록
+linkTargets.forEach(({ link, id }) => {
+  link.addEventListener("click", (event) => {
+    event.preventDefault(); // 기본 a tag 동작 막기
+    scrollToHeading(id); // target heading 으로 스크롤 이동
+    setActive(id); // active heading set
+
+    // url 해시 제거
+    history.replaceState(
+      null,
+      "",
+      window.location.pathname + window.location.search,
+    );
+  });
+});
+
+// 헤더 높이만큼 오프셋 설정
+const scrollOffset = 80;
+
+// 마지막 활성 헤딩 ID 추적
+let lastActiveId = headings[0]?.id || "";
+let lastSeenId = lastActiveId;
+
+// scrollToHeading function - 스무스 스크롤 이동
+const scrollToHeading = (id) => {
+  const target = document.getElementById(id);
+  if (!target) return;
+  const targetTop =
+    target.getBoundingClientRect().top + window.scrollY - scrollOffset;
+  window.scrollTo({ top: Math.max(0, targetTop), behavior: "smooth" });
+};
+
+// setActive function - 현재 활성 헤딩 ID 설정
+const setActive = (id) => {
+  lastActiveId = id;
+};
+```
+
+### 2-2. 스크롤 위치 기준으로 활성 Heading 계산하기
+
+본문을 스크롤할 때 현재 보고 있는 섹션(heading)을 활성화하려면 두 가지 방법이 있음. <br/>
+권장 방식은 `IntersectionObserver`를 사용해 화면에 보이는 헤딩 집합을 추적하는 것이고, 간단한 폴백으로는 스크롤 위치와 각 헤딩의 위치를 비교하는 방법을 사용할 수 있음 <br/>
+
+1. `new IntersectionObserver(...)` : 각 heading이 뷰포트에 들어오는지/나가는지 감시
+2. `entries.foreach(...)` : 교차상태가 바뀐 heading들만 들어옴
+3. `entry.isIntersecting` 이 true일때 : visibleHeadings에 id 추가, 아니면 제거
+4. `updateActiveFromVisible()`: 보이는 heading들 기준으로 TOC에서 활성 항목 결정
+
+```ts
+// IntersectionObserver 기반 (권장)
+const observer = new IntersectionObserver(
+  (entries) => {
+    entries.forEach((entry) => {
+      const { id } = entry.target;
+      if (!id) return;
+
+      if (entry.isIntersecting) {
+        visibleHeadings.add(id);
+      } else {
+        visibleHeadings.delete(id);
+      }
+    });
+
+    // 보이는 heading들 기준으로 TOC에서 활성 항목 결정
+    updateActiveFromVisible();
+  },
+  {
+    root: null,
+    rootMargin: `${-(scrollOffset + 10)}px 0px -60% 0px`,
+    threshold: [0, 0.2, 0.4, 0.6, 0.8, 1],
+  },
+);
+
+// 모든 heading 요소에 대해 observer 등록
+headings.forEach((heading) => observer.observe(heading));
+```
+
+---
+
+**updateActiveFromVisible** 함수는 현재 보이는 heading들 중에서 <br/>
+문서 내 순서대로 가장 마지막에 위치한 heading을 활성 항목으로 설정 <br/>
+
+```ts
+const updateActiveFromVisible = () => {
+  if (!headings.length) return;
+  if (!visibleHeadings.size) {
+    if (lastSeenId) setActive(lastSeenId);
+    return;
+  }
+
+  // 보이는 heading들 중 문서 내 순서대로 정렬
+  const orderedVisible = [...visibleHeadings].sort(
+    (a, b) => headingOrder.get(a) - headingOrder.get(b),
+  );
+
+  // 가장 마지막에 보이는 heading이 현재 활성 항목
+  const activeId = orderedVisible[orderedVisible.length - 1];
+  lastSeenId = activeId;
+
+  // 가장마지막에 보이는 heading ID를 활성 ID로 설정
+  setActive(activeId);
+};
+```
+
+### 2-3. 스크롤 위치에 따른 Progress bar 높이 조절
+
+글 전체 대비 현재 읽은 비율을 계산해 `.toc-progress-bar`의 높이를 0~100%로 조절 <br/>
+포스트 상단 위치, 포스트 높이, 뷰포트 높이를 이용해 비율을 계산
+
+```ts
+const updateProgressBar = () => {
+  if (!(progressBar && postEl)) return;
+  const postTop = postEl.getBoundingClientRect().top + window.scrollY;
+  const postHeight = postEl.offsetHeight;
+  const viewHeight = window.innerHeight;
+  const denominator = Math.max(1, postHeight - viewHeight);
+  const ratio = Math.min(
+    Math.max((window.scrollY - postTop) / denominator, 0),
+    1,
+  );
+  progressBar.style.height = `${ratio * 100}%`;
+
+  if (tocAside) {
+    const pastEnd = window.scrollY + viewHeight > postTop + postHeight + 20;
+    tocAside.classList.toggle("over-end", pastEnd);
+  }
+};
+```
+
+### 2-4. 스크롤이벤트 리스너 등록
+
+스크롤 이벤트가 발생할 때마다 `updateProgressBar` 함수를 호출하여 Progress bar 높이 갱신 <br/>
+
+```tsx
+window.addEventListener("scroll", onScroll, { passive: true });
+
+let progressTicking = false;
+const onScroll = () => {
+  if (!progressTicking) {
+    window.requestAnimationFrame(() => {
+      updateProgressBar();
+      progressTicking = false;
+    });
+    progressTicking = true;
+  }
+};
+```
+
+- `progressTicking` 변수를 사용하여 `requestAnimationFrame`을 통해 스크롤 이벤트 핸들러의 호출 빈도를 제어 <br/>
+  이렇게 하면 스크롤 이벤트가 너무 자주 발생하는 것을 방지
+- **스크롤 이벤트가 왔을때**
+  - `progressTicking`이 `false`일때만 `requestAnimationFrame`을 등록
+  - `updateProgressBar` 함수를 호출하여 Progress bar 높이 갱신
+  - `progressTicking`을 true로 설정하여 다음 스크롤 이벤트까지 대기
+
+## 3. 고민중인것
+
+- `history.replaceState()`를 사용해서 URL 해시를 제거하는게 맞나 싶음, 이부분은 좀 더 고민해봐야할듯. <br/>
+  근데, 있으면 뒤로가기할때 불편한것도 있고, 없으니까 주소창이 깔끔해서 좋긴한데 말이지.
+- 글이 짧고, 헤딩이 별로 없는경우 글이 좀 빈약해보이는 느낌이 있음
+- Progress bar가 지나가면, `a tag`가 볼드 처리되도록 하고싶은데 해당부분은 조금 어려운거같음 ㅠㅠ (지금도 충분한듯)
+- 글을쓸때 heading 적절하게 분산시켜 써야 좀 이쁘게 나올듯
+- header tag 하나에 컨텐츠가 굉장히 방대한경우, progress bar가 이상하게 보이는 이슈현상이 있음 ㅠㅠ
+
+## 4. 마치며
+
+이상으로 블로그에 목차 기능과 Progress bar 기능을 추가하는 방법에 대해 알아보았습니다. <br/>
+이 기능들은 긴 글을 읽을 때 유용하며, 독자들이 현재 위치를 쉽게 파악할 수 있도록 도와줍니다. <br/>
+여러분의 블로그에도 이 기능들을 적용해보시길 권장합니다!
