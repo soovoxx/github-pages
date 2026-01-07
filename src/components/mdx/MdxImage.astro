@@ -1,6 +1,6 @@
 ---
 export interface Props {
-  src: string;
+  src: string | ImageMetadata;
   alt?: string;
   width?: number | string;
   height?: number | string;
@@ -13,10 +13,17 @@ const toCssSize = (value?: number | string) => {
   return typeof value === "number" ? `${value}px` : value;
 };
 
-const widthStyle = toCssSize(width);
-const heightStyle = toCssSize(height);
-const widthAttr = typeof width === "number" ? width : undefined;
-const heightAttr = typeof height === "number" ? height : undefined;
+const resolvedSrc = typeof src === "string" ? src : src.src;
+const resolvedWidth =
+  width === undefined && typeof src !== "string" ? src.width : width;
+const resolvedHeight =
+  height === undefined && typeof src !== "string" ? src.height : height;
+
+const widthStyle = toCssSize(resolvedWidth);
+const heightStyle = toCssSize(resolvedHeight);
+const widthAttr = typeof resolvedWidth === "number" ? resolvedWidth : undefined;
+const heightAttr =
+  typeof resolvedHeight === "number" ? resolvedHeight : undefined;
 
 const imgStyle = [
   "display: block",
@@ -31,7 +38,7 @@ const imgStyle = [
 
 <figure class="mdx-image">
   <img
-    src={src}
+    src={resolvedSrc}
     alt={alt}
     width={widthAttr}
     height={heightAttr}
