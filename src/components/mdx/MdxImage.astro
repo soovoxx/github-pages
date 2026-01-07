@@ -1,0 +1,48 @@
+---
+export interface Props {
+  src: string;
+  alt?: string;
+  width?: number | string;
+  height?: number | string;
+}
+
+const { src, alt = "", width, height } = Astro.props as Props;
+
+const toCssSize = (value?: number | string) => {
+  if (value === undefined || value === null || value === "") return undefined;
+  return typeof value === "number" ? `${value}px` : value;
+};
+
+const widthStyle = toCssSize(width);
+const heightStyle = toCssSize(height);
+const widthAttr = typeof width === "number" ? width : undefined;
+const heightAttr = typeof height === "number" ? height : undefined;
+
+const imgStyle = [
+  "display: block",
+  "max-width: 100%",
+  "height: auto",
+  widthStyle ? `width: ${widthStyle}` : "",
+  heightStyle ? `height: ${heightStyle}` : "",
+]
+  .filter(Boolean)
+  .join("; ");
+---
+
+<figure class="mdx-image">
+  <img
+    src={src}
+    alt={alt}
+    width={widthAttr}
+    height={heightAttr}
+    loading="lazy"
+    style={imgStyle}
+  />
+</figure>
+
+<style>
+  .mdx-image {
+    max-width: 800px;
+    margin: 12px auto;
+  }
+</style>

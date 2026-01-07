@@ -1,0 +1,254 @@
+---
+title: "Zod + React Hook Form으로 폼 검증 깔끔하게 하기"
+slug: "zod-react-hook-form-validation"
+pubDate: "2026-01-07 21:30:00"
+summary: "Zod와 React Hook Form을 함께 사용해 타입 안전한 폼 검증을 구현하는 방법을 예제로 정리"
+series: "Form Validation"
+tags: ["zod", "react-hook-form", "typescript", "form", "validation"]
+---
+
+import MdxImage from "@/components/mdx/MdxImage.astro";
+import zodMeme from "@/content/images/2026-01-07/image.png";
+
+폼 검증은 웹 개발에서 중요한 부분입니다. <br/>
+특히 타입스크립트를 사용할 때, 타입 안전한 폼 검증을 구현하는 것은 더욱 중요해집니다.
+이번 포스트에서는 Zod와 React Hook Form을 함께 사용하여 깔끔하고 효율적인 폼 검증 방법을 소개하겠습니다.
+
+## 1. Zod와 React Hook Form 소개
+
+`Zod`는 타입스크립트 친화적인 스키마 선언 및 검증 라이브러리입니다. <br/>
+`React Hook Form`은 리액트에서 폼 상태 관리를 간편하게 해주는 라이브러리입니다. <br/>
+
+---
+
+`React Hook Form`을 단독으로 사용하면, `required`, `pattern`이 점점 지저분해짐 <br/>
+`Zod`도 단독으로 사용하면, 폼 상태 관리가 어려워짐 <br/>
+근데! 둘을 함께 사용하면, 타입 안전한 폼 검증과 상태 관리를 깔끔하게 할 수 있습니다.
+
+이거완전..
+
+<MdxImage src={zodMeme} alt="둘은 문제아지만 최강" />
+
+## 2. 설치
+
+먼저, 필요한 패키지를 설치하자.
+
+```bash
+npm install react-hook-form zod @hookform/resolvers
+```
+
+각 라이브러리들의 간단요약
+
+- **react-hook-form**: 폼 상태 관리
+- **zod**: 스키마 선언 및 검증
+- **@hookform/resolvers**: react-hook-form과 zod를 연결해주는 역할
+
+## 3. 예제
+
+**회원가입 이라는 주제로 예제를 만들어보려고 한다.**
+
+### 3-1. Zod Schema 정의
+
+zod를 이용한 스키마 정의는 다음과 같음
+
+**스키마(Schema)** ? 사용자가 입력한 데이터가 우리가 기대하는 형태와 일치하는지 검증하는 규칙 집합을 의미함.
+
+```tsx
+const signUpSchema = z.object({
+  username: z.string().min(3, "사용자명은 3자 이상이어야 합니다."),
+  email: z.email("유효한 이메일 주소를 입력해주세요."),
+  password: z.string().min(6, "비밀번호는 6자 이상이어야 합니다."),
+});
+```
+
+비밀번호의 경우, 조건이 더 붙을수 있는데, <br/>
+만약 대문자, 숫자, 특수문자를 1개이상 포함해야 한다고 가정한다면 다음과 같이 작성할 수 있다.
+
+```tsx
+const passwordSchema = z
+  .string()
+  .min(6, "비밀번호는 6자 이상이어야 합니다.")
+  .refine((val) => /[A-Z]/.test(val), {
+    message: "대문자 1개 이상 포함해야 합니다.",
+  })
+  .refine((val) => /[0-9]/.test(val), {
+    message: "숫자 1개 이상 포함해야 합니다.",
+  })
+  .refine((val) => /[^A-Za-z0-9]/.test(val), {
+    message: "특수문자 1개 이상 포함해야 합니다.",
+  });
+
+const signUpSchema = z.object({
+  username: z.string().min(3, "사용자명은 3자 이상이어야 합니다."),
+  email: z.string().email("유효한 이메일 주소를 입력해주세요."),
+  password: passwordSchema,
+});
+```
+
+### 3-2. React Hook Form과 Zod 연결
+
+이제 React Hook Form과 Zod를 연결해보자,
+
+```tsx
+type SignUpFormData = z.infer<typeof signUpSchema>;
+const SignUpForm = () => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<SignUpFormData>({
+    resolver: zodResolver(signUpSchema),
+  });
+
+  const onSubmit = (data: SignUpFormData) => {
+    console.log(data);
+  };
+};
+```
+
+위에서 유심히 봐야하는 부분은 `z.infer`, `useForm`, `zodResolver` 3가지임 <br/>
+
+---
+
+1. `z.infer`: zod.schema로 부터 type을 추론함 <br/>
+   - .infer()를 사용하면 좋은점은, zod 스키마를 변경할 때마다 수동으로 타입을 업데이트할 필요가 없음 <br/>
+     **즉, 스키마와 타입이 항상 일치하게 유지됨** <br/>
+
+```ts
+type SignUpFormData = z.infer<typeof signUpSchema>;
+
+type formData = {
+  username: string;
+  email: string;
+  password: string;
+};
+
+formData === SignUpFormData; // true
+```
+
+2. `useForm<T>`: React Hook Form의 핵심 훅으로, 폼 상태와 메서드를 관리함 <br/>
+   **form에서 사용할 타입이 SignUpFormData 임을 명시**
+
+3. `zodResolver`: zod 스키마를 React Hook Form의 검증기로 변환해줌 <br/>
+   **form 검증은 zod schema에게 맡기겠다 라는 의미**
+
+{/* prettier-ignore */}
+```tsx
+const {
+  register,
+  handleSubmit,
+  formState: { errors },
+} = useForm<SignUpFormData>({ // 2번 useForm<T>
+  resolver: zodResolver(signUpSchema), // 3번 zodResolver
+});
+```
+
+### 3-3. 폼 구현
+
+이제 폼을 구현해보자
+
+```tsx
+return (
+  <form onSubmit={handleSubmit(onSubmit)}>
+    <div>
+      <label>사용자명:</label>
+      <input type="text" {...register("username")} />
+      {errors.username && <p>{errors.username.message}</p>}
+    </div>
+    <div>
+      <label>이메일:</label>
+      <input type="email" {...register("email")} />
+      {errors.email && <p>{errors.email.message}</p>}
+    </div>
+    <div>
+      <label>비밀번호:</label>
+      <input type="password" {...register("password")} />
+      {errors.password && <p>{errors.password.message}</p>}
+    </div>
+    <button type="submit">회원가입</button>
+  </form>
+);
+```
+
+일단 register 함수는 각 입력 필드를 폼 상태에 등록하는 역할을 함 <br/>
+그리고 errors 객체는 각 필드의 검증 오류 메시지를 담고 있음 <br/>
+폼이 제출되면 handleSubmit 함수가 호출되고, <br/>
+검증이 통과되면 onSubmit 콜백이 실행되어 폼 데이터를 처리하게 됨.
+
+- **register가 뭔데 ?**
+  - `register` 함수는 각 입력 필드를 폼 상태에 등록하는 역할을 함 <br/>
+    예를들어, `register("username")`은 username 필드를 폼 상태에 등록함 <br/>
+    이렇게 등록된 필드는 React Hook Form이 관리하게 됨
+- **errors가 뭔데 ?**
+  - `errors` 객체는 각 필드의 검증 오류 메시지를 담고 있음 <br/>
+    예를들어, `errors.username`은 username 필드의 검증 오류 정보를 담고 있음 <br/>
+    만약 username 필드가 검증에 실패하면, `errors.username.message`를 통해 오류 메시지를 표시할 수 있음
+
+### 3-4. 전체 코드
+
+```tsx
+import React from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+const signUpSchema = z.object({
+  username: z.string().min(3, "사용자명은 3자 이상이어야 합니다."),
+  email: z.string().email("유효한 이메일 주소를 입력해주세요."),
+  password: z
+    .string()
+    .min(6, "비밀번호는 6자 이상이어야 합니다.")
+    .refine((val) => /[A-Z]/.test(val), {
+      message: "대문자 1개 이상 포함해야 합니다.",
+    })
+    .refine((val) => /[0-9]/.test(val), {
+      message: "숫자 1개 이상 포함해야 합니다.",
+    })
+    .refine((val) => /[^A-Za-z0-9]/.test(val), {
+      message: "특수문자 1개 이상 포함해야 합니다.",
+    }),
+});
+type SignUpFormData = z.infer<typeof signUpSchema>;
+const SignUpForm = () => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<SignUpFormData>({
+    resolver: zodResolver(signUpSchema),
+  });
+  const onSubmit = (data: SignUpFormData) => {
+    console.log(data);
+  };
+  return (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <div>
+        <label>사용자명:</label>
+        <input type="text" {...register("username")} />
+        {errors.username && <p>{errors.username.message}</p>}
+      </div>
+      <div>
+        <label>이메일:</label>
+        <input type="email" {...register("email")} />
+        {errors.email && <p>{errors.email.message}</p>}
+      </div>
+      <div>
+        <label>비밀번호:</label>
+        <input type="password" {...register("password")} />
+        {errors.password && <p>{errors.password.message}</p>}
+      </div>
+      <button type="submit">회원가입</button>
+    </form>
+  );
+};
+export default SignUpForm;
+```
+
+## 4. 마무리
+
+속성으로 **회원가입**을 주제로 zod + react hook form을 이용한 폼 검증 예제를 살펴보았습니다. <br/>
+이 방법을 사용하면 타입 안전한 폼 검증과 상태 관리를 깔끔하게 할 수 있다. <br/>
+더 복잡한 폼이나 추가적인 검증이 필요할 때도 이 접근법을 확장하여 사용할 수 있음. <br/>
+글 읽어주셔서 감사합니다! 😊
+
+<br />
+~역시 둘은 문제아(?)지만 최강이었음;~
