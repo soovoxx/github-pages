@@ -56,6 +56,16 @@ samp,
   font-size: 14px !important;
 }
 
+@media (max-width: 640px) {
+  pre,
+  code,
+  kbd,
+  samp,
+  .line span {
+    font-size: 13px !important;
+  }
+}
+
 :not(pre) > code {
   display: inline;
   background: var(--code-bg);

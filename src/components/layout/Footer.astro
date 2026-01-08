@@ -82,6 +82,35 @@ import { BLOG_NAME } from "@/constants";
       width: 90vw;
       flex-direction: column;
       align-items: center;
+      gap: 12px;
+    }
+
+    .footer-inner p {
+      font-size: 0.9rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .footer {
+      padding: 24px 0 32px;
+    }
+
+    .footer-inner {
+      width: 94vw;
+    }
+
+    .footer-inner p {
+      font-size: 0.85rem;
+    }
+
+    .footer-icons a {
+      width: 38px;
+      height: 38px;
+    }
+
+    .footer-icons svg {
+      width: 18px;
+      height: 18px;
     }
   }
 </style>
