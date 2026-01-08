@@ -465,11 +465,50 @@ const {
   @media (max-width: 900px) {
     .post-layout {
       .post {
-        padding: 22px;
+        padding: 20px;
       }
 
       .toc-link {
         padding: 8px 10px;
+      }
+    }
+  }
+
+  @media (max-width: 640px) {
+    .post-layout {
+      .post {
+        padding: 16px;
+
+        h1.title {
+          font-size: 1.6rem;
+        }
+
+        .summary {
+          font-size: 0.95rem;
+        }
+
+        .tags .tag {
+          font-size: 0.85em;
+          padding: 2px 5px;
+        }
+      }
+
+      .post-nav {
+        .nav-links {
+          grid-template-columns: 1fr;
+        }
+
+        .nav-link {
+          padding: 10px 12px;
+
+          .nav-label {
+            font-size: 0.85rem;
+          }
+
+          .nav-title {
+            font-size: 0.95rem;
+          }
+        }
       }
     }
   }

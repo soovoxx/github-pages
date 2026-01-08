@@ -259,13 +259,56 @@ const series = `${baseUrl}/series`;
       width: 90vw;
     }
 
-    .nav-links {
-      gap: 8px;
+    .brand {
+      font-size: 1.2rem;
     }
 
-    .nav-links a,
+    .nav-links {
+      gap: 6px;
+    }
+
+    .nav-links a {
+      padding: 8px 10px;
+      font-size: 0.9rem;
+    }
+
+    .icon-button {
+      width: 36px;
+      height: 36px;
+    }
+
     .toggle {
-      padding: 8px 12px;
+      padding: 8px 10px;
+    }
+
+    .icon {
+      width: 18px;
+      height: 18px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .nav-links a {
+      padding: 6px 8px;
+      font-size: 0.85rem;
+    }
+
+    .brand {
+      font-size: 1.1rem;
+    }
+
+    .icon-button {
+      width: 32px;
+      height: 32px;
+    }
+
+    .toggle {
+      padding: 6px 8px;
+    }
+
+    .icon {
+      width: 16px;
+      height: 16px;
     }
   }
 </style>

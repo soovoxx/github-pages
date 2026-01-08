@@ -97,6 +97,7 @@ hr {
     border-radius: 7px;
     overflow-x: auto;
     border: 1px solid var(--code-border);
+    max-width: 100%;
   }
 
   pre > code {
@@ -112,6 +113,8 @@ hr {
     border: 1px solid var(--table-border);
     border-radius: 10px;
     background: var(--panel);
+    display: block;
+    overflow-x: auto;
   }
 
   th,
@@ -129,5 +132,41 @@ hr {
 
   tbody tr:nth-child(odd) {
     background: var(--table-row-alt);
+  }
+
+  @media (max-width: 640px) {
+    font-size: 15px;
+
+    :is(h2, h3, h4, h5, h6) {
+      padding-left: 8px;
+
+      &::before {
+        width: 2px;
+      }
+    }
+
+    :is(ul, ol) {
+      margin-left: 5px;
+      padding-left: 1em;
+    }
+
+    pre {
+      padding: 12px 14px;
+      border-radius: 6px;
+    }
+
+    th,
+    td {
+      padding: 8px 10px;
+      font-size: 14px;
+    }
+
+    blockquote {
+      padding-left: 12px;
+
+      p {
+        font-size: 14px !important;
+      }
+    }
   }
 }

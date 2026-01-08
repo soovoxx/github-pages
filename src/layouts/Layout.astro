@@ -152,6 +152,14 @@ import { baseUrl, BLOG_NAME } from "@/constants";
   @media (max-width: 720px) {
     main.content {
       width: 90vw;
+      padding: 28px 0 48px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    main.content {
+      width: 94vw;
+      padding: 24px 0 40px;
     }
   }
 
@@ -207,5 +215,20 @@ import { baseUrl, BLOG_NAME } from "@/constants";
     clip: rect(0, 0, 0, 0);
     white-space: nowrap;
     border: 0;
+  }
+
+  @media (max-width: 640px) {
+    :global(pre[data-code-block] .code-copy) {
+      top: 8px;
+      right: 8px;
+      padding: 5px 8px;
+      border-radius: 8px;
+      font-size: 0.8rem;
+    }
+
+    :global(pre[data-code-block] .code-copy .icon) {
+      width: 14px;
+      height: 14px;
+    }
   }
 </style>
