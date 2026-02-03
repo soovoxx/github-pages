@@ -1,0 +1,137 @@
+---
+title: "zod 없이 react-hook-form만 사용하면?"
+slug: "react-hook-form-without-zod"
+pubDate: "2026-02-03 21:55:00"
+summary: "react-hook-form에 zod가 없으면"
+tags: ["react", "react-hook-form", "zod"]
+---
+
+zod 없이, React Hook form 을 사용하는 경우도 있음 보통은 3가지를 조합해서 많이 쓰게됨
+
+1. **필드등록(register)**
+2. **검증규칙(rule) 넣기, (required, pattern, minLength, validate)**
+3. **에러메시지 표시(formState.error)**
+
+## 1. register는 언제 사용하는지 ? 
+
+선결론 : 일반적인 `input`, `textarea`, `select` 처럼, <br/>
+`value`, `onChange`를 React가 직접 관리하지 않아도 되는 "순수 폼 요소" 면 register가 가장 깔끔하다
+
+```tsx
+import { useForm } from "react-hook-form";
+function MyForm() {
+
+  const { register, handleSubmit } = useForm();
+  
+  const onSubmit = (data) => {
+    console.log(data);
+  };
+  
+  return (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <input {...register("username", { required: "사용자명은 필수입니다." })} />
+      <button type="submit">제출</button>
+    </form>
+  );
+}
+```
+
+username은 일반 text input 이라 type을 지정하지 않아도 되어서, <br/>
+간단히 register("username") 으로 등록 가능
+
+## 2. 검증규칙(rule) 넣기
+
+register 함수의 두번째 인자로 검증규칙을 넣을 수 있음 <br/>
+예를들어, `required`, `pattern`, `minLength`, `validate` 같은 규칙들을 넣을 수 있음
+
+```tsx
+<input
+  {...register("email", {
+    required: "이메일은 필수입니다.",
+    pattern: {
+      value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+      message: "유효한 이메일 주소를 입력해주세요.",
+    },
+  })}
+/>
+```
+
+위와같이, email 필드에 대해 required 와 pattern 검증규칙을 추가가 가능하다
+
+## 3. 에러메시지 표시(formState.error)
+
+`formState.errors` 객체를 통해 각 필드의 검증 오류 메시지를 확인할 수 있음 <br/>
+예를들어, `errors.email` 은 email 필드의 검증 오류 정보를 담고 있음 <br/>
+만약 email 필드가 검증에 실패하면, `errors.email.message` 를 통해 오류 메시지를 표시할 수 있음
+
+```tsx
+{errors.email && <p>{errors.email.message}</p>}
+```
+
+## 4. Controller와 register 차이점
+
+- `register`는 일반적인 폼 요소에 사용 <br/>
+  - input, textarea, select 등
+- `Controller`는 커스텀 컴포넌트나 외부 UI 라이브러리와 함께 사용할 때 사용 <br/>
+  - 예: React Select, Date Picker
+
+```tsx
+const options = [
+  { value: "apple", label: "사과" },
+  { value: "banana", label: "바나나" },
+  { value: "orange", label: "오렌지" }
+];
+
+<Controller
+  name="customSelect"
+  control={control}
+  render={({ field }) => {
+    return <CustomSelect {...field} options={options} />;
+  }}
+/>
+```
+
+위와같이, `Controller`는 `render` prop을 통해 커스텀 컴포넌트를 렌더링하고, <br/>
+`field` 객체를 전달하여 폼 상태와 메서드를 연결해줌 <br/>
+
+`field` 속성은 사용한 컴포넌트에 맞는 속성이 매핑이 됨 <br/>
+즉, `input`이면, `input`관련한 속성이 매핑되고, `select`면 `select`관련한 속성이 매핑됨 <br/>
+
+**따라서, `Controller`는 커스텀 컴포넌트와의 통합에 유용하며, `register`는 기본 폼 요소에 간단히 사용할 때 적합함**
+
+## 5. form 요소에 onSubmit 핸들러 연결하기
+
+`handleSubmit` 함수를 사용하여 폼의 `onSubmit` 핸들러를 연결 <br/>
+```tsx
+<form onSubmit={handleSubmit(onValid, onInvalid)}>
+    {/* 폼 필드들 */}
+    <button type="submit">제출</button>
+</form>
+```
+
+`handleSubmit` 함수는 두개의 콜백 함수를 인자로 받음 <br/>
+- `onValid`: 폼이 유효할 때 호출되는 함수 <br/>
+- `onInvalid`: 폼이 유효하지 않을 때 호출되는 함수 <br/>
+
+```tsx
+const onValid = (data) => {
+  console.log("유효한 데이터:", data);
+};
+
+const onInvalid = (errors) => {
+  console.log("검증 오류:", errors);
+};
+```
+
+onInvalid 콜백은 선택사항이며, 필요에 따라 생략 가능 <br/>
+폼이 유효하지 않을 때 기본적으로 `formState.errors` 객체가 업데이트 됨
+
+## 6. 결론
+
+React Hook Form 만으로도 강력한 폼 관리를 할 수 있음 <br/>
+register, 검증규칙, 에러메시지 표시를 적절히 활용하여 깔끔하고 효율적인 폼을 만들 수 있음 <br/>
+필요에 따라 Controller를 사용하여 커스텀 컴포넌트와도 쉽게 통합 가능함
+
+하지만, zod 같은 스키마 기반 검증 라이브러리를 함께 사용하면 <br/>
+더욱 강력하고 일관된 검증 로직을 구현할 수 있으므로, <br/>
+복잡한 폼이나 일관된 검증이 필요한 경우에는 zod와 같은 라이브러리 사용을 고려하는 것이 좋음
