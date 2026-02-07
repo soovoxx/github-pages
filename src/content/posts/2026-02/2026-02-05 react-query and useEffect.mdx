@@ -6,13 +6,16 @@ summary: "react-query와 useEffect의 관계를 알아보자"
 tags: ["react", "react-query"]
 ---
 
-React Query를 사용하면, 데이터를 가져오고 관리하는 작업이 훨씬 간편해짐, <br/>
-따라서 useEffect를 사용하여 데이터를 가져오는 빈도가 줄어듦
+React Query(TanStack Query)를 사용하면,  
+서버에서 데이터를 가져오고 **캐싱 · 동기화 · 상태 관리**하는 작업이 훨씬 간편해진다.  
+그 결과, **데이터 패칭을 목적으로 useEffect를 사용하는 빈도는 크게 줄어들게 된다.**
 
-## 1. 기존의 useEffect 처리방식
+---
 
-보통은 useEffect의 componentDidMount 역할을 활용하여, <br/>
-컴포넌트가 마운트될 때 데이터를 가져오는 작업을 수행하게 함
+## 1. 기존의 useEffect 처리 방식
+
+기존 React에서는 `useEffect`의 `componentDidMount` 역할을 활용해  
+컴포넌트가 마운트될 때 데이터를 가져오는 방식을 많이 사용했다.
 
 ```tsx
 import { useEffect, useState } from "react";
@@ -21,67 +24,111 @@ function MyComponent() {
   const [data, setData] = useState(null);
 
   useEffect(() => {
-    fetch("/api/data") 
+    fetch("/api/data")
       .then((response) => response.json())
       .then((data) => setData(data));
   }, []);
 
-  return <div>{data ? JSON.stringify(data) : "Loading.. ."}</div>;
+  return <div>{data ? JSON.stringify(data) : "Loading..."}</div>;
 }
 ```
 
-useEffect의 두번째 인자를 빈배열로 설정하면, <br/> 
-`document.addEventListener('DOMContentLoaded', ...)` 와 동일하게 컴포넌트가 처음 렌더링될 때만 실행됨
+`useEffect`의 두 번째 인자를 빈 배열(`[]`)로 설정하면,
+컴포넌트가 **처음 렌더링될 때 한 번만 실행**된다.
 
-## 2. useEffect로 처리할때, 한계와 단점
+이 방식은 개념적으로
+`document.addEventListener("DOMContentLoaded", ...)` 와 유사한 역할을 한다.
 
-1. **코드 중복** : 여러 컴포넌트에서 동일한 데이터 패칭 로직이 반복될 수 있음 <br/>
-2. **로딩 및 에러 상태 관리** : 로딩 상태와 에러 처리를 직접 구현해야 함 <br/>
-3. **캐싱 부족** : 동일한 데이터를 여러번 가져올 때마다 네트워크 요청이 발생함 <br/>
-4. **복잡한 의존성 관리** : 의존성 배열을 잘못 설정하면 무한 루프가 발생할 수 있음
+---
+
+## 2. useEffect 기반 데이터 패칭의 한계와 단점
+
+### 1) 코드 중복
+
+여러 컴포넌트에서 동일한 API를 호출하면
+패칭 로직이 반복적으로 작성되기 쉽다.
+
+### 2) 로딩 / 에러 상태를 직접 관리해야 함
 
 ```tsx
-function getData(){
-    return fetch("/api/data") 
-        .then((response) => response.json());
+const [loading, setLoading] = useState(false);
+const [error, setError] = useState(null);
+```
+
+같은 상태들을 매번 직접 만들어야 한다.
+
+### 3) 캐싱과 중복 요청 처리의 부담
+
+useEffect 자체가 문제라기보다는,
+**캐싱 · 재시도 · 중복 요청 방지 로직을 직접 구현해야 한다는 점**이 부담이다.
+
+### 4) 의존성 배열 관리의 어려움
+
+```tsx
+function getData() {
+  return fetch("/api/data").then((res) => res.json());
 }
 
-/* codes */
-
 useEffect(() => {
-    getData().then((data) => setData(data));
-}, [someDependency]); // someDependency가 자주 변경되면, 불필요한 재요청이 발생할 수 있음
-``` 
+  getData().then((data) => setData(data));
+}, [someDependency]);
+```
 
-useEffect의 배열 의존성을 잘못 설정하면, 문제가 발생할 수 있음(예: 무한 루프) <br/>
-따라서, 의존성 배열을 신중하게 관리해야 함
+* `someDependency`가 자주 변경되면 불필요한 재요청 발생
+* 잘못 설정하면 무한 루프 위험
 
-## 3. React Query의 장점
+결국, **의존성 배열을 항상 신경 써야 한다는 점**이 유지보수 비용으로 이어진다.
 
-1. **중앙 집중식 데이터 관리** : 전역 상태로 데이터를 관리하여, 여러 컴포넌트에서 쉽게 접근 가능 <br/>
-2. **자동 캐싱 및 갱신** : 동일한 데이터를 여러번 요청할 때, 캐시된 데이터를 사용하여 네트워크 요청을 줄임 <br/>
-3. **로딩 및 에러 상태 자동 관리** : 로딩 상태와 에러 처리를 내장하여, 개발자가 직접 구현할 필요 없음 <br/>
-4. **백그라운드 데이터 갱신** : 데이터가 오래되었을 때 자동으로 백그라운드에서 갱신 가능 <br/>
-5. **간편한 쿼리 무효화 및 재요청** : 쿼리를 쉽게 무효화하고, 데이터를 다시 가져올 수 있음
+---
 
-## 4. React Query를 사용했을때의 처리
+## 3. React Query(TanStack Query)의 핵심 장점
 
-React Query를 사용할때는 useEffect를 더이상 사용하지 않게됨( point ! ) <br/>
-그 이유는 React Query가 자체적으로 데이터 가져오기, 캐싱, 갱신 로직을 처리하기 때문임
+React Query는 Redux나 Zustand 같은 “전역 상태관리 라이브러리”라기보다는,
+**서버 상태(Server State)를 전문적으로 다루는 도구**에 가깝다.
 
+### 주요 장점
 
-`queryKey`는 쿼리의 고유한 키이고, `queryFn`은 데이터를 가져오는 함수 <br/>
-이렇게 명시적으로 작성하면 코드의 가독성이 더 높아집니다.
+1. **중앙 집중식 서버 상태 캐시 관리**
+
+   * QueryClient가 서버 데이터를 캐시로 관리
+   * 여러 컴포넌트가 동일한 `queryKey`로 데이터 공유 가능
+
+2. **자동 캐싱 및 중복 요청 방지**
+
+   * 같은 쿼리는 네트워크 요청을 반복하지 않음
+
+3. **로딩 / 에러 상태 자동 제공**
+
+   * `isLoading`, `isError`, `error` 등 기본 제공
+
+4. **백그라운드 데이터 갱신**
+
+   * 포커스 복귀, stale 상태 등 조건에 따라 자동 재검증
+
+5. **간편한 무효화 및 재요청**
+
+   * `invalidateQueries`로 손쉽게 최신 데이터 동기화
+
+---
+
+## 4. React Query를 사용한 데이터 패칭
+
+React Query를 사용하면
+**데이터 패칭을 위해 useEffect를 직접 작성할 필요가 거의 없어지게 된다.**
+
+> ❗️중요 포인트
+> useEffect가 완전히 사라지는 것이 아니라,
+> **“데이터 패칭 목적의 useEffect”가 대체된다**는 의미다.
 
 ```tsx
-import { useQuery } from "react-query";
+import { useQuery } from "@tanstack/react-query";
 
 function MyComponent() {
   const { data, isLoading } = useQuery({
     queryKey: ["fetchData"],
     queryFn: () =>
-      fetch("/api/data").then((response) => response.json())
-  }); // 해당 시점에 이미 componentDidMount(useEffect의 빈 배열) 역할이 포함됨
+      fetch("/api/data").then((response) => response.json()),
+  });
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -91,26 +138,67 @@ function MyComponent() {
 }
 ```
 
-따라서 `React Query`를 사용하면, `useEffect`를 사용하여 데이터를 가져오는 빈도가 현저히 줄어들게 됨 <br/>
+* 컴포넌트가 해당 쿼리를 **구독**하는 순간
+* 캐시 상태에 따라 자동으로 fetch가 트리거된다
+  (마운트 시 1회 요청과 유사한 동작)
 
-결론적으로, `React Query`를 사용하면 `useEffect`를 통한 데이터 가져오기 작업이 불필요해짐 <br/>
-(물론, `useEffect`가 여전히 필요한 경우도 있지만, 데이터 패칭과 관련된 작업에서는 `React Query`가 훨씬 효율적이라는 얘기)
+---
 
-## 5. react query devtools 상태
+## 5. useEffect가 여전히 필요한 경우
 
-React Query Devtools를 사용하면, 애플리케이션의 데이터 패칭 상태를 시각적으로 확인할 수 있음 <br/>
-이를 통해 쿼리의 상태, 캐시된 데이터, 로딩 상태 등을 쉽게 파악할 수 있음
+React Query가 모든 useEffect를 대체하는 것은 아니다.
 
-1. **설치**
+### 예시 1) 쿼리 결과로 부수 효과 실행
+
+```tsx
+const { isSuccess } = useQuery({
+  queryKey: ["me"],
+  queryFn: fetchMe,
+});
+
+useEffect(() => {
+  if (isSuccess) {
+    toast("유저 정보 로딩 완료!");
+  }
+}, [isSuccess]);
+```
+
+### 예시 2) 조건부 요청 (`enabled`)
+
+```tsx
+useQuery({
+  queryKey: ["user", userId],
+  queryFn: () => fetchUser(userId),
+  enabled: !!userId, // userId가 있을 때만 요청
+});
+```
+
+이런 경우는 **useEffect 대신 React Query 옵션으로 해결 가능**하다.
+
+---
+
+## 6. React Query Devtools 활용
+
+React Query Devtools를 사용하면
+쿼리 상태와 캐시 데이터를 시각적으로 확인할 수 있다.
+
+### 1) 설치
+
 ```bash
 npm install @tanstack/react-query-devtools
 ```
 
-2. **사용**
+### 2) 설정
+
 ```tsx
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-import { QueryClient, QueryClientProvider } from 'react-query';
+import {
+  QueryClient,
+  QueryClientProvider,
+} from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+
 const queryClient = new QueryClient();
+
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
@@ -121,13 +209,28 @@ function App() {
 }
 ```
 
-3. **기능**
-- 쿼리 상태 시각화 : 각 쿼리의 상태(로딩, 성공, 실패 등)를 한눈에 확인 가능
-- 캐시 데이터 확인 : 현재 캐시된 데이터를 조회하고, 필요시 수동으로 갱신 가능
-- 쿼리 무효화 및 재요청 : 쿼리를 무효화하고 다시 요청할 수 있는 기능 제공
-- 성능 모니터링 : 쿼리의 성능을 모니터링하여 최적화에 도움
+### 3) 확인 가능한 정보
 
-## 6. 참고자료
+* 쿼리 상태 (idle / loading / success / error)
+* 캐시된 데이터 내용
+* 쿼리 무효화 및 수동 재요청
+* stale / fresh 상태 확인
 
-- [React Query 공식문서](https://tanstack.com/query/v4)
-- [React Query 시작하기 (feat. useEffect로 데이터 패칭하는 것의 단점!)](https://velog.io/@mikio/React-Query-시작하기-feat.-useEffect로-데이터-패칭하는-것의-단점)
+---
+
+## 7. 정리
+
+* useEffect는 **여전히 중요한 React Hook**
+* 하지만 **서버 데이터 패칭을 담당하기에는 역할이 과도해진 상태**
+* React Query는 이 역할을 전문적으로 분리해준다
+
+결론적으로,
+**React Query를 사용하면 데이터 패칭을 위한 useEffect는 거의 사용하지 않게 된다.**
+이는 React 구조를 더 단순하고 예측 가능하게 만들어준다.
+
+---
+
+## 8. 참고 자료
+
+* [tanstack-query 공식사이트](https://tanstack.com/query/latest)
+* [React Query 시작하기 (feat. useEffect로 데이터 패칭하는 것의 단점!)](https://velog.io/@mikio/React-Query-시작하기-feat.-useEffect로-데이터-패칭하는-것의-단점)
