@@ -478,13 +478,23 @@ const {
     .post-layout {
       .post {
         padding: 16px;
+        border-radius: 18px;
 
         h1.title {
-          font-size: 1.6rem;
+          font-size: 2rem;
+          line-height: 1.25;
+          overflow-wrap: anywhere;
         }
 
         .summary {
           font-size: 0.95rem;
+          justify-content: flex-start;
+          text-align: left;
+        }
+
+        .tags {
+          justify-content: flex-start;
+          flex-wrap: wrap;
         }
 
         .tags .tag {
@@ -508,6 +518,41 @@ const {
           .nav-title {
             font-size: 0.95rem;
           }
+        }
+      }
+    }
+  }
+
+  @media (max-width: 430px) {
+    .post-layout {
+      .post {
+        padding: 14px 12px;
+        border-radius: 16px;
+        box-shadow: 0 12px 28px var(--shadow);
+
+        h1 {
+          margin: 10px 0;
+        }
+
+        h1.title {
+          font-size: 1.95rem;
+        }
+
+        .summary {
+          font-size: 0.9rem;
+          line-height: 1.5;
+        }
+
+        .tags {
+          padding: 8px 0;
+        }
+      }
+
+      .post-nav {
+        margin-top: 22px;
+
+        .nav-link {
+          border-radius: 10px;
         }
       }
     }

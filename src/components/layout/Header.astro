@@ -182,7 +182,8 @@ const series = `${baseUrl}/series`;
     background: color-mix(in srgb, var(--accent) 10%, transparent);
   }
 
-  .icon-button {
+  .icon-button,
+  .toggle {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -199,27 +200,17 @@ const series = `${baseUrl}/series`;
     box-shadow: 0 10px 22px var(--shadow);
   }
 
-  .icon-button:hover {
+  .icon-button:hover,
+  .toggle:hover {
     transform: translateY(-1px);
     box-shadow: 0 14px 28px var(--shadow);
   }
 
   .toggle {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    border: 1px solid color-mix(in srgb, var(--text) 18%, transparent);
-    background: var(--panel);
-    color: var(--text);
-    border-radius: 12px;
-    padding: 10px 14px;
-    cursor: pointer;
+    position: relative;
+    padding: 0;
     font-weight: 300;
-    transition:
-      transform 0.2s ease,
-      box-shadow 0.25s ease;
-    box-shadow: 0 10px 25px var(--shadow);
+    overflow: hidden;
   }
 
   .icon {
@@ -227,11 +218,18 @@ const series = `${baseUrl}/series`;
     height: 20px;
     transition:
       opacity 0.2s ease,
-      transform 0.25s ease;
+      transform 0.2s ease;
+  }
+
+  .toggle .icon {
+    position: absolute;
+    inset: 50% auto auto 50%;
+    transform: translate(-50%, -50%);
+    transition: opacity 0.2s ease;
   }
 
   .toggle:hover .icon {
-    transform: translateY(-1px) rotate(-5deg);
+    transform: translate(-50%, -50%);
   }
 
   .sun-icon {
@@ -246,17 +244,17 @@ const series = `${baseUrl}/series`;
 
   :global(:root[data-theme="light"]) .sun-icon {
     opacity: 1;
-    transform: none;
   }
 
   :global(:root[data-theme="dark"]) .moon-icon {
     opacity: 1;
-    transform: none;
   }
 
   @media (max-width: 720px) {
     .nav-bar {
       width: 90vw;
+      flex-wrap: wrap;
+      gap: 10px 14px;
     }
 
     .brand {
@@ -272,13 +270,10 @@ const series = `${baseUrl}/series`;
       font-size: 0.9rem;
     }
 
-    .icon-button {
+    .icon-button,
+    .toggle {
       width: 36px;
       height: 36px;
-    }
-
-    .toggle {
-      padding: 8px 10px;
     }
 
     .icon {
@@ -288,8 +283,19 @@ const series = `${baseUrl}/series`;
   }
 
   @media (max-width: 480px) {
+    .nav-bar {
+      width: min(94vw, calc(100% - 20px));
+      padding: 12px 0;
+    }
+
+    .nav-links {
+      width: 100%;
+      justify-content: space-between;
+      gap: 4px;
+    }
+
     .nav-links a {
-      padding: 6px 8px;
+      padding: 6px 7px;
       font-size: 0.85rem;
     }
 
@@ -297,18 +303,16 @@ const series = `${baseUrl}/series`;
       font-size: 1.1rem;
     }
 
-    .icon-button {
-      width: 32px;
-      height: 32px;
-    }
-
+    .icon-button,
     .toggle {
-      padding: 6px 8px;
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
     }
 
     .icon {
-      width: 16px;
-      height: 16px;
+      width: 18px;
+      height: 18px;
     }
   }
 </style>

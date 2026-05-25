@@ -24,6 +24,8 @@ hr {
   gap: 5px;
   line-height: 1.7;
   color: var(--text);
+  min-width: 0;
+  overflow-wrap: break-word;
 
   p {
     margin: 0 0 0.5em;
@@ -98,6 +100,7 @@ hr {
     overflow-x: auto;
     border: 1px solid var(--code-border);
     max-width: 100%;
+    min-width: 0;
   }
 
   pre > code {
@@ -116,6 +119,7 @@ hr {
     background: var(--panel);
     display: block;
     overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
   }
 
   th,
@@ -168,6 +172,50 @@ hr {
       p {
         font-size: 14px !important;
       }
+    }
+  }
+
+  @media (max-width: 430px) {
+    gap: 4px;
+    font-size: 14.5px;
+    line-height: 1.68;
+
+    p {
+      margin-bottom: 0.45em;
+    }
+
+    :is(h2, h3, h4, h5, h6) {
+      line-height: 1.32;
+      padding-left: 7px;
+    }
+
+    :is(ul, ol) {
+      margin-left: 0;
+      padding-left: 1.1em;
+    }
+
+    pre {
+      padding: 12px;
+      font-size: 12px;
+    }
+
+    table {
+      margin: 0.75em 0;
+      border-radius: 8px;
+    }
+
+    th,
+    td {
+      min-width: 86px;
+      padding: 7px 9px;
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    blockquote {
+      padding-left: 10px;
+      border-top-right-radius: 8px;
+      border-bottom-right-radius: 8px;
     }
   }
 }

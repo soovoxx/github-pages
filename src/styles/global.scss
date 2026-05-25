@@ -31,6 +31,26 @@ body {
     "Nimbus Sans", Arial, sans-serif;
 }
 
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  overflow-x: hidden;
+}
+
+body {
+  overflow-x: clip;
+}
+
+@media (max-width: 640px) {
+  html {
+    font-size: 80%;
+  }
+}
+
 a {
   color: var(--accent);
   text-decoration-color: color-mix(in srgb, var(--accent) 70%, transparent);
@@ -62,7 +82,7 @@ samp,
   kbd,
   samp,
   .line span {
-    font-size: 13px !important;
+    font-size: 12px !important;
   }
 }
 
@@ -78,6 +98,7 @@ samp,
 pre {
   padding: 20px;
   border-radius: 10px;
+  max-width: 100%;
 
   code {
     display: block;
