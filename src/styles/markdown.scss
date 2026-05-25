@@ -107,7 +107,8 @@ hr {
   }
 
   table {
-    width: 100%;
+    width: max-content;
+    max-width: 100%;
     border-collapse: collapse;
     margin: 1em 0;
     border: 1px solid var(--table-border);

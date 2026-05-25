@@ -1,0 +1,271 @@
+---
+title: "vue의 watch, watchEffect"
+slug: "vue-watch-watcheffect"
+pubDate: "2026-05-25 13:30:00"
+summary: "Vue의 watch 기본 문법과 deep, immediate 옵션, 활용 방법을 정리."
+tags: ["vue", "watch", "watchEffect"]
+---
+
+## 1. watch 기본 설명
+
+`watch`는 Vue 3 컴포지션 API에서 특정 반응형 값이 바뀔 때 사이드 이펙트를 실행할 때 쓰이는 함수임.
+`ref`, `reactive`, `computed` 등 반응형 소스를 감시하면서 값이 바뀔 때마다 콜백을 호출해줌.
+
+### 1-1. 기본 문법
+
+```ts
+import { ref, watch } from 'vue';
+
+const count = ref(0);
+
+watch(count, (newVal, oldVal) => {
+  console.log('count 바뀜', oldVal, '->', newVal);
+});
+
+// count 값을 증가시키는 함수
+const increment = () => {
+    count.value++;
+}
+// count 값을 감소시키는 함수
+const decrement = () => {
+    count.value--;
+}
+```
+
+- 첫 번째 인자: 감시할 반응형 소스
+- 두 번째 인자: 값이 바뀔 때 실행되는 콜백
+  - `newVal`: 바뀐 이후 값
+  - `oldVal`: 이전 값
+
+`watch`는 소스를 함수로도 전달할 수 있음.
+
+```ts
+watch(
+  () => count.value * 2,
+  (newVal, oldVal) => {
+    console.log('computed 값 바뀜', oldVal, '->', newVal);
+  }
+);
+```
+> 첫번째 인자가 함수형일땐 함수의 반환값을 감시함. <br/>
+> `() => count.value * 2`를 감시하면 count 변화에 따라 아래처럼 값이 전달됨. <br/>
+> 그러나, newVal 값이 변경되지 않는다면, watch는 동작 하지 않음, <br/>
+
+ | count 변화 | oldVal | newVal |
+ | --- | --- | --- |
+ | 0 -> 1 | 0 | 2 |
+ | 1 -> 2 | 2 | 4 |
+ | 2 -> 3 | 4 | 6 |
+
+### 1-2. deep, immediate 옵션
+
+`watch`에서 옵션을 세 번째 인자로 전달할 수 있음.
+
+```ts
+watch(source, callback, {
+  deep: true,
+  immediate: true,
+});
+```
+
+- `deep: true`
+  - 객체나 배열 내부까지 깊게 감시함.
+  - `reactive` 객체 내부 속성이 바뀔 때도 콜백이 실행됨.
+
+```ts
+const state = reactive({ user: { name: 'pika' } });
+
+watch(
+  () => state,
+  () => {
+    console.log('state 내부가 바뀜');
+  },
+  { deep: true }
+);
+
+state.user.name = 'chu';
+```
+
+- `immediate: true`
+  - 감시를 등록하자마자 콜백이 즉시 실행됨.
+  - 초기 값 기반으로 동기화 로직이나 초기화 작업에 유용함.
+  - `react`의 `useEffect(() => {/* codes */}, [])`와 유사한 역할을 함
+
+```ts
+watch(count, (newVal) => {
+  console.log('count 초기값 또는 변경값', newVal);
+}, { immediate: true });
+```
+
+### 1-3. 응용 방법
+
+- API 호출/데이터 페칭
+  - 특정 값 바뀔 때마다 서버 요청 처리 가능함.
+  - ex. 계좌번호 조회, 사용자 정보 불러오기 등
+
+```ts
+watch(accountNo, async (value) => {
+    // 계좌번호가 13자리일 때만 API 호출
+    if(accountNo.value.length === 13) {
+        const resp = await fetch(`/api/account/${value}`) // get account info
+        const data = await resp.json();
+        accountInfo.value = data;
+    }
+});
+```
+
+- 값 검증/로컬 상태 동기화
+  - 입력값 변경 시 검증 처리하거나 로컬 스토리지에 저장할 때 좋음.
+
+```ts
+watch(form, (newForm) => {
+  localStorage.setItem('form', JSON.stringify(newForm));
+}, { deep: true });
+```
+
+- computed 값 감시
+  - 컴포넌트 내부 상태를 파생 값으로 감시하고 추가 로직 실행 가능.
+
+```ts
+const fullName = computed(() => `${firstName.value} ${lastName.value}`);
+watch(fullName, (newName) => {
+  console.log('fullName 변경됨', newName);
+});
+```
+
+- cleanup/비동기 작업 취소
+  - `watch`는 반환 함수로 정리(cleanup)할 수 있음.
+
+```ts
+watch(someValue, async (newVal, oldVal, onCleanup) => {
+  let active = true;
+  onCleanup(() => {
+    active = false;
+  });
+
+  const result = await fetchData(newVal);
+  if (!active) return;
+  data.value = result;
+});
+```
+
+## 2. watchEffect 기본 설명
+
+- watchEffect는 현재값만 필요할때 사용함
+- watchEffect는 watch와는 다르게 감시대상을 명시적으로 전달하지 않음
+- 대신 watchEffect 내부에서 사용된 reactive 값들을 자동으로 추적함
+
+### 2-1. 기본 문법
+
+```ts
+import { ref, watchEffect } from 'vue';
+
+const message = ref('');
+
+watchEffect(() => {
+  message.value = 'Hello';
+  console.log('message 값이 변경됨 : ', message.value);
+});
+```
+
+- `watchEffect`는 등록 시 즉시 실행됨.
+- 콜백 내에서 사용된 모든 반응형 값이 자동으로 추적됨.
+- 따로 `newVal`, `oldVal`을 받지 않음.
+
+> **위의 코드를 react로 작성하면 다음과 같음**
+
+```tsx
+import { useState, useEffect } from 'react';
+
+const [message, setMessage] = useState('');
+
+useEffect(() => {
+  setMessage('Hello');
+  console.log('message 값이 변경됨 : ', message);
+}, [message]);
+```
+
+> `watchEffect` 안에서 사용된 reactive 값은 react의 `useEffect`에서 의존성 배열에 해당하는 역할을 함, <br/>
+> 즉, `message`가 바뀔 때마다 `useEffect`가 실행되는 것과 유사함.
+
+### 2-2. watchEffect 특징
+
+- `watch`와 달리 감시 대상을 명시하지 않음.
+- 내부에서 사용하는 반응형 값만 추적하므로 코드가 더 간결함.
+- 사이드 이펙트 로직을 선언형으로 작성할 때 편함.
+
+```ts
+const state = reactive({ count: 1 });
+
+watchEffect(() => {
+  console.log('count 값', state.count);
+});
+```
+
+- cleanup 처리도 가능함.
+
+```ts
+watchEffect((onCleanup) => {
+  const timer = setInterval(() => {
+    console.log('tick', Date.now());
+  }, 1000);
+
+  onCleanup(() => {
+    clearInterval(timer);
+  });
+});ㅊ
+```
+
+### 2-3. watchEffect 응용 방법
+
+- 계산된 동작 감시
+  - 내부에서 참조하는 값이 바뀌면 자동으로 다시 실행됨.
+
+```ts
+const searchQuery = ref('');
+const results = ref([]);
+
+watchEffect(async () => {
+  if (!searchQuery.value) {
+    results.value = [];
+    return;
+  }
+
+  const resp = await fetch(`/api/search?q=${encodeURIComponent(searchQuery.value)}`);
+  results.value = await resp.json();
+});
+```
+
+- 자동 동기화
+  - 반응형 상태를 기반으로 외부 상태를 자동으로 맞출 때 유용함.
+
+```ts
+watchEffect(() => {
+  document.title = `${count.value} clicked`;
+});
+```
+
+- 의존성이 자주 바뀌는 로직
+  - `watch`처럼 명시적 옵션 없이 내부 참조만으로 자동 추적됨.
+
+## 3. watch vs watchEffect 선택 기준
+
+- `watch`
+  - 특정 값 변경을 명시적으로 감시할 때.
+  - 이전 값과 현재 값을 비교해야 할 때.
+  - `deep` 옵션이나 `immediate`가 필요한 경우.
+
+- `watchEffect`
+  - 내부에서 사용하는 여러 반응형 값을 자동으로 추적할 때.
+  - 초기 실행이 항상 필요한 사이드 이펙트일 때.
+  - 간단한 자동 동기화 로직을 작성할 때.
+
+## 4. 정리
+
+- `watch`는 반응형 값이 바뀔 때 사이드 이펙트를 처리하는 용도임.
+- `deep`은 객체/배열 내부까지 감시할 때 쓰임.
+- `immediate`는 등록 직후 콜백을 바로 실행함.
+- `watchEffect`는 내부에서 사용하는 반응형 값을 자동으로 추적함.
+- `watchEffect`는 `newVal`/`oldVal`을 사용하지 않고, 등록 시 즉시 실행됨.
+- 실제 응용에서는 API 호출, 로컬 동기화, computed 값 감시, cleanup 처리 등에 자주 활용됨.
+
