@@ -1,0 +1,122 @@
+---
+title: "vue의 ref, reactive"
+slug: "vue-ref-reactive"
+pubDate: "2026-05-24 21:20:00"
+summary: "Vue 3의 반응형 API에서 ref와 reactive의 차이와 사용 시 주의할 점을 정리합니다."
+tags: ["vue", "ref", "reactive"]
+---
+
+## vue의 ref, reactive
+
+Vue 3의 컴포지션 API에서 `ref`랑 `reactive`는 둘 다 반응형 상태를 만드는 도구임. 근데 쓰는 용도랑 동작 방식, 내부 구조가 다름.
+
+### 1. 기본 개념
+
+- `ref(value)`
+  - 단일 값(`string`, `number`, `boolean`, `object`, `array`)을 반응형으로 감싸줌.
+  - 반환값은 `.value` 프로퍼티로 실제 값을 읽고 씀.
+  - 템플릿 안에서는 Vue가 자동으로 `.value`를 풀어줌.
+
+- `reactive(object)`
+  - 객체나 배열 전체를 반응형으로 만듦.
+  - 반환값 자체가 프록시 객체라서 내부 속성을 직접 접근/수정 가능.
+
+### 2. 사용 예시
+
+```ts
+import { ref, reactive, computed } from 'vue';
+
+const count = ref(0);
+const state = reactive({
+  user: 'soovoxx',
+  age: 28,
+  hobbies: ['coding', 'reading'],
+});
+
+const doubled = computed(() => count.value * 2);
+const introduce = computed(() => `Hi, I'm ${state.user} and I'm ${state.age} years old.`);
+```
+
+### 3. 차이점 정리
+
+- 단일 원시 값
+  - `ref`가 더 적합함.
+  - 예: `const isOpen = ref(false);`
+
+- 여러 속성이 있는 상태
+  - `reactive`가 더 자연스러움.
+  - 예: `const form = reactive({ email: '', password: '' });`
+
+- 객체 내부에 원시 값만 있는 경우
+  - `ref`로 감싼 객체(`ref({})`)도 가능함.
+  - 하지만 객체 내부 속성을 반응형으로 유지하려면 `reactive`가 더 편함.
+
+### 4. `.value` 접근과 구조 분해
+
+`ref`는 `.value`를 직접 써야 해서 구조 분해할 때 주의 필요함.
+
+```ts
+const count = ref(1);
+const { value } = count; // 여기서는 반응형 연결 끊김
+```
+
+`reactive` 객체도 속성을 구조 분해하면 반응성이 사라짐.
+
+```ts
+const state = reactive({ title: 'Vue' });
+const { title } = state; // 반응성이 사라짐
+```
+
+이럴 때는 `toRefs`나 `toRef`를 쓰면 됨.
+
+```ts
+import { reactive, toRefs } from 'vue';
+const state = reactive({ title: 'Vue' });
+const { title } = toRefs(state);
+```
+
+### 5. ref와 reactive 섞어 쓰기
+
+- `reactive` 안에 `ref` 넣기 가능함.
+- `ref` 안에 객체 넣으면 객체도 반응형으로 추적됨.
+
+```ts
+const item = ref({ count: 0 });
+item.value.count += 1;
+
+const state = reactive({ item: ref('hello') });
+state.item.value = 'world';
+```
+
+### 6. 주의할 점
+
+- `reactive`를 `readonly`로 만들면 변경 막을 수 있음.
+- `Map`, `Set`, `Date` 같은 비표준 구조는 `reactive`로 감싸도 제한 있음.
+- `ref`랑 `reactive`를 헷갈리면 값 읽기/쓰기에서 버그 생김.
+
+### 7. 언제 뭘 고를까?
+
+- 상태가 단일 값이면 `ref`
+- 여러 필드를 가진 상태는 `reactive`
+- 중첩된 객체나 배열에 세세한 추적 필요하면 `reactive`
+- 단일 객체를 교체하거나 `.value`로 제어가 편하면 `ref`
+
+### 8. 요약
+
+- `ref`는 단일 값에 적합한 반응형 래퍼임
+- `reactive`는 객체/배열 전체를 프록시로 감싸는 상태임
+- `toRefs`/`toRef`로 구조 분해 시 반응성 유지 가능함
+- 템플릿에서는 `ref`의 `.value`가 자동 언랩핑돼서 더 간단함
+
+## 결론
+Vue 3에서 `ref`랑 `reactive`는 서로 대체제가 아니라 **용도에 맞춰 쓰는 도구임**.
+
+- 단일 값이나 프리미티브 상태는 `ref`
+- 여러 속성이나 중첩된 데이터를 다룰 때는 `reactive`
+- 컴포넌트 내부에서 유연하게 상태를 바꾸고 싶으면 `reactive`, 특정 값만 교체하거나 `.value`로 직접 제어하고 싶으면 `ref`
+
+또한 복잡한 상태를 한 번에 다룰 때는 `reactive`를 기본으로 쓰고, 필요한 부분에 `toRefs`/`toRef`를 섞어서 쓰면 유지보수가 쉬워짐.
+
+템플릿에서는 `ref`를 쓸 때 `.value`를 신경 쓰지 않아도 되니까 보기 편함. 하지만 스크립트 안에서는 `.value`를 염두에 두고, `reactive` 객체는 구조 분해 시 반응성이 떨어질 수 있다는 점을 기억하면 실수 줄일 수 있음.
+
+결국 중요한 건 어떤 API를 쓰느냐보다, 상태를 어떻게 설계하느냄. `ref`와 `reactive`를 각각의 특성에 맞게 쓰면 코드가 더 직관적이고, 디버깅도 쉬워짐.
