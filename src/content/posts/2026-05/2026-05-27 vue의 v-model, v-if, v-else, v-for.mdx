@@ -1,0 +1,412 @@
+---
+title: "vue의 기본 디렉티브"
+slug: "vue-directives"
+pubDate: "2026-05-27 22:10:00"
+summary: "vue에서 자주 사용하는 v-model, v-if, v-else, v-for 디렉티브의 기본 개념과 사용법을 정리"
+tags: ["vue"]
+---
+
+## 1. v-model 기본 설명
+
+`v-model`은 Vue에서 입력 요소와 반응형 상태를 양방향으로 연결할 때 사용하는 디렉티브임.
+사용자가 input에 값을 입력하면 상태가 바뀌고, 상태가 바뀌면 화면의 input 값도 같이 바뀜.
+
+React에서는 `value`와 `onChange`를 직접 연결해야 하는 경우가 많지만, Vue에서는 `v-model` 하나로 입력값 동기화를 간단하게 처리할 수 있음.
+
+### 1-1. 기본 문법
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue';
+
+const message = ref('');
+</script>
+
+<template>
+  <input v-model="message" />
+  <p>입력한 값: {{ message }}</p>
+</template>
+```
+
+- `message`는 `ref`로 만든 반응형 상태임.
+- `input`에 값을 입력하면 `message` 값이 자동으로 변경됨.
+- `message` 값이 바뀌면 `input`의 표시 값도 같이 변경됨.
+
+### 1-2. input 타입별 사용
+
+`v-model`은 text input뿐만 아니라 checkbox, radio, select에서도 사용할 수 있음.
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue';
+
+const username = ref('');
+const isAgree = ref(false);
+const selectedRole = ref('user');
+</script>
+
+<template>
+  <input v-model="username" placeholder="이름 입력" />
+
+  <label>
+    <input type="checkbox" v-model="isAgree" />
+    약관 동의
+  </label>
+
+  <select v-model="selectedRole">
+    <option value="user">사용자</option>
+    <option value="admin">관리자</option>
+  </select>
+</template>
+```
+
+- text input은 문자열 값을 연결함.
+- checkbox는 `true`/`false` 값을 연결함.
+- select는 선택된 option의 `value`를 연결함.
+
+### 1-3. v-model 수식어
+
+`v-model`에는 입력값을 다루기 쉽게 해주는 수식어가 있음.
+
+```vue
+<input v-model.trim="name" />
+<input v-model.number="age" />
+<input v-model.lazy="email" />
+```
+
+- `.trim`
+  - 입력값 앞뒤 공백을 제거함.
+- `.number`
+  - 입력값을 숫자로 변환함.
+- `.lazy`
+  - `input` 이벤트마다 반영하지 않고, `change` 이벤트 시점에 값을 반영함.
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue';
+
+const age = ref(0);
+</script>
+
+<template>
+  <input v-model.number="age" />
+  <p>10년 뒤 나이: {{ age + 10 }}</p>
+</template>
+```
+
+`v-model.number`를 쓰면 input에서 받은 값이 가능한 경우 숫자로 변환되기 때문에 계산 로직에서 쓰기 편함.
+
+### 1-4. 컴포넌트에서 v-model 사용
+
+부모 컴포넌트에서 자식 컴포넌트에 `v-model`을 사용할 수도 있음.
+Vue 3에서는 기본적으로 `modelValue` prop과 `update:modelValue` 이벤트를 사용함.
+
+```vue
+<!-- Parent.vue -->
+<script setup lang="ts">
+import { ref } from 'vue';
+import TextField from './TextField.vue';
+
+const title = ref('');
+</script>
+
+<template>
+  <TextField v-model="title" />
+  <p>{{ title }}</p>
+</template>
+```
+
+```vue
+<!-- TextField.vue -->
+<script setup lang="ts">
+defineProps<{
+  modelValue: string;
+}>();
+
+const emit = defineEmits<{
+  'update:modelValue': [value: string];
+}>();
+</script>
+
+<template>
+  <input
+    :value="modelValue"
+    @input="emit('update:modelValue', ($event.target as HTMLInputElement).value)"
+  />
+</template>
+```
+
+- 부모는 `<TextField v-model="title" />`처럼 간단하게 사용함.
+- 자식은 `modelValue`를 받고, 값 변경 시 `update:modelValue` 이벤트를 emit함.
+
+## 2. v-if, v-else 기본 설명
+
+`v-if`와 `v-else`는 조건에 따라 DOM을 렌더링할지 결정하는 디렉티브임.
+조건이 `true`이면 해당 요소가 생성되고, `false`이면 DOM에서 제거됨.
+
+### 2-1. v-if 기본 문법
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue';
+
+const isLogin = ref(false);
+</script>
+
+<template>
+  <p v-if="isLogin">로그인 상태입니다.</p>
+  <p v-else>로그인이 필요합니다.</p>
+</template>
+```
+
+- `isLogin`이 `true`이면 첫 번째 문장이 렌더링됨.
+- `isLogin`이 `false`이면 `v-else`가 붙은 문장이 렌더링됨.
+
+### 2-2. v-else-if 사용
+
+조건이 여러 개일 때는 `v-else-if`를 사용할 수 있음.
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue';
+
+const score = ref(85);
+</script>
+
+<template>
+  <p v-if="score >= 90">A 등급</p>
+  <p v-else-if="score >= 80">B 등급</p>
+  <p v-else-if="score >= 70">C 등급</p>
+  <p v-else>재시험 필요</p>
+</template>
+```
+
+위에서부터 조건을 확인하고, 가장 먼저 `true`가 되는 블록만 렌더링함.
+
+### 2-3. template과 함께 사용
+
+여러 요소를 하나의 조건으로 묶고 싶을 때는 `<template>` 태그에 `v-if`를 사용할 수 있음.
+
+```vue
+<template>
+  <template v-if="isLogin">
+    <h3>내 정보</h3>
+    <p>환영합니다.</p>
+    <button>로그아웃</button>
+  </template>
+
+  <template v-else>
+    <h3>로그인</h3>
+    <button>로그인하기</button>
+  </template>
+</template>
+```
+
+`<template>`은 실제 DOM 요소로 렌더링되지 않아서 불필요한 wrapper를 만들지 않고 조건 그룹을 만들 수 있음.
+
+### 2-4. v-if와 v-show 차이
+
+조건에 따라 보여주고 숨기는 기능은 `v-show`로도 만들 수 있음.
+하지만 `v-if`와 `v-show`는 동작 방식이 다름.
+
+```vue
+<p v-if="isVisible">v-if로 표시</p>
+<p v-show="isVisible">v-show로 표시</p>
+```
+
+- `v-if`
+  - 조건이 `false`이면 DOM에서 제거됨.
+  - 조건이 자주 바뀌지 않는 경우에 적합함.
+- `v-show`
+  - DOM은 유지하고 CSS `display`만 변경함.
+  - 자주 열고 닫는 UI에 적합함.
+
+모달이나 탭처럼 자주 보여주고 숨기는 UI는 `v-show`가 편할 수 있고, 권한에 따라 아예 렌더링하지 않아야 하는 UI는 `v-if`가 더 적합함.
+
+## 3. v-for 기본 설명
+
+`v-for`는 배열이나 객체 데이터를 반복해서 화면에 렌더링할 때 사용하는 디렉티브임.
+목록 UI, 테이블, 카드 리스트처럼 같은 구조를 여러 번 그릴 때 자주 사용함.
+
+### 3-1. 배열 반복
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue';
+
+const fruits = ref(['apple', 'banana', 'orange']);
+</script>
+
+<template>
+  <ul>
+    <li v-for="fruit in fruits" :key="fruit">
+      {{ fruit }}
+    </li>
+  </ul>
+</template>
+```
+
+- `fruit`는 현재 반복 중인 요소임.
+- `fruits`는 반복할 배열임.
+- `:key`는 Vue가 각 항목을 구분하기 위해 사용하는 고유값임.
+
+### 3-2. index 사용
+
+반복문에서 현재 index도 같이 받을 수 있음.
+
+```vue
+<template>
+  <ul>
+    <li v-for="(fruit, index) in fruits" :key="fruit">
+      {{ index + 1 }}. {{ fruit }}
+    </li>
+  </ul>
+</template>
+```
+
+`index`는 0부터 시작하므로 화면에 순번을 표시할 때는 `index + 1`처럼 사용할 수 있음.
+
+### 3-3. 객체 배열 반복
+
+실제 화면에서는 문자열 배열보다 객체 배열을 반복하는 경우가 더 많음.
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue';
+
+const users = ref([
+  { id: 1, name: 'soovoxx', role: 'admin' },
+  { id: 2, name: 'pika', role: 'user' },
+  { id: 3, name: 'chu', role: 'user' },
+]);
+</script>
+
+<template>
+  <ul>
+    <li v-for="user in users" :key="user.id">
+      {{ user.name }} - {{ user.role }}
+    </li>
+  </ul>
+</template>
+```
+
+객체 배열에서는 보통 `id`처럼 항목을 유일하게 구분할 수 있는 값을 `key`로 사용함.
+
+### 3-4. key를 사용하는 이유
+
+`key`는 Vue가 리스트를 효율적으로 업데이트하기 위해 사용하는 힌트임.
+리스트의 순서가 바뀌거나 항목이 추가/삭제될 때 각 DOM이 어떤 데이터와 연결되어 있는지 판단하는 데 필요함.
+
+```vue
+<li v-for="todo in todos" :key="todo.id">
+  {{ todo.title }}
+</li>
+```
+
+- 가능하면 `index`보다 고유한 `id`를 key로 쓰는 게 좋음.
+- `index`를 key로 쓰면 항목 순서가 바뀔 때 입력값이나 컴포넌트 상태가 꼬일 수 있음.
+- 단순히 정적인 목록이고 순서가 바뀌지 않는 경우에는 index를 사용할 수도 있음.
+
+### 3-5. 객체 반복
+
+배열뿐만 아니라 객체도 `v-for`로 반복할 수 있음.
+
+```vue
+<script setup lang="ts">
+const profile = {
+  name: 'soovoxx',
+  job: 'frontend developer',
+  stack: 'Vue',
+};
+</script>
+
+<template>
+  <ul>
+    <li v-for="(value, key) in profile" :key="key">
+      {{ key }}: {{ value }}
+    </li>
+  </ul>
+</template>
+```
+
+객체를 반복할 때는 `(value, key)` 순서로 값을 받을 수 있음.
+
+## 4. v-if와 v-for 같이 사용할 때
+
+`v-if`와 `v-for`를 같은 요소에 동시에 쓰는 것은 피하는 게 좋음.
+가독성이 떨어지고, 조건 판단과 반복 렌더링의 의도가 섞여서 유지보수가 어려워질 수 있음.
+
+### 4-1. 좋지 않은 예시
+
+```vue
+<li v-for="todo in todos" v-if="!todo.done" :key="todo.id">
+  {{ todo.title }}
+</li>
+```
+
+위처럼 한 요소에 `v-for`와 `v-if`를 같이 쓰면 리스트를 반복하는 로직과 필터링 조건이 한 곳에 섞임.
+
+### 4-2. computed로 필터링하기
+
+보통은 `computed`로 먼저 필터링한 뒤 `v-for`에서 렌더링하는 방식이 더 깔끔함.
+
+```vue
+<script setup lang="ts">
+import { computed, ref } from 'vue';
+
+const todos = ref([
+  { id: 1, title: 'Vue 공부', done: false },
+  { id: 2, title: '블로그 작성', done: true },
+  { id: 3, title: '운동하기', done: false },
+]);
+
+const activeTodos = computed(() => todos.value.filter((todo) => !todo.done));
+</script>
+
+<template>
+  <ul>
+    <li v-for="todo in activeTodos" :key="todo.id">
+      {{ todo.title }}
+    </li>
+  </ul>
+</template>
+```
+
+필터링 조건이 `computed`로 분리되면 템플릿은 화면을 그리는 역할에 집중할 수 있음.
+
+### 4-3. 목록 전체 조건 처리
+
+리스트 자체를 보여줄지 말지를 결정하는 경우에는 wrapper에 `v-if`를 쓰면 됨.
+
+```vue
+<template>
+  <ul v-if="todos.length > 0">
+    <li v-for="todo in todos" :key="todo.id">
+      {{ todo.title }}
+    </li>
+  </ul>
+
+  <p v-else>등록된 할 일이 없습니다.</p>
+</template>
+```
+
+이 방식은 목록이 비어 있을 때 empty message를 보여줄 때 자주 사용함.
+
+## 5. 정리
+
+- `v-model`은 입력 요소와 상태를 양방향으로 연결함.
+- `v-model.trim`, `v-model.number`, `v-model.lazy` 같은 수식어로 입력값 처리 방식을 조절할 수 있음.
+- `v-if`, `v-else-if`, `v-else`는 조건에 따라 DOM을 렌더링함.
+- `v-if`는 DOM 생성/제거, `v-show`는 CSS 표시 여부를 바꾸는 방식임.
+- `v-for`는 배열이나 객체를 반복해서 화면에 렌더링함.
+- `v-for`를 사용할 때는 가능한 고유한 `key`를 지정하는 게 좋음.
+- `v-if`와 `v-for`는 같은 요소에 같이 쓰기보다 `computed`나 wrapper로 분리하는 게 좋음.
+
+## 결론
+
+`v-model`, `v-if`, `v-else`, `v-for`는 Vue 템플릿에서 가장 자주 만나는 기본 디렉티브임.
+
+입력값을 상태와 연결할 때는 `v-model`, 조건에 따라 화면을 나눌 때는 `v-if`와 `v-else`, 목록을 반복해서 그릴 때는 `v-for`를 사용하면 됨.
+
+처음에는 문법이 간단해 보여도 실제로는 상태 관리, 조건 분기, 리스트 업데이트 방식과 연결되어 있어서 중요함.
+특히 `v-for`의 `key`와 `v-if`/`v-for` 분리 원칙을 기억해두면 리스트 렌더링에서 생기는 불필요한 버그를 줄일 수 있음.
